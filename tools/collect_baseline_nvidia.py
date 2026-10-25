@@ -371,13 +371,36 @@ def build_scaling_factors(specs_path=HARDWARE_SPECS_PATH,
     }
 
 
+def _dumps(obj, indent=2, level=0):
+    """indent=2 JSON, but render all-scalar lists (shapes, values, ...) inline.
+
+    Dumping e.g. lengths=[8]*1024 one element per line is pure noise; collapsing
+    leaf arrays keeps the object structure readable without the vertical bloat.
+    """
+    pad, pad2 = " " * (indent * level), " " * (indent * (level + 1))
+    if isinstance(obj, dict):
+        if not obj:
+            return "{}"
+        items = [f"{pad2}{json.dumps(k, ensure_ascii=False)}: "
+                 f"{_dumps(v, indent, level + 1)}" for k, v in obj.items()]
+        return "{\n" + ",\n".join(items) + "\n" + pad + "}"
+    if isinstance(obj, list):
+        if not obj:
+            return "[]"
+        if all(x is None or isinstance(x, (int, float, str, bool)) for x in obj):
+            return json.dumps(obj, ensure_ascii=False)
+        items = [f"{pad2}{_dumps(x, indent, level + 1)}" for x in obj]
+        return "[\n" + ",\n".join(items) + "\n" + pad + "]"
+    return json.dumps(obj, ensure_ascii=False)
+
+
 def _flush_results(results, output_path):
     if output_path is None:
         return
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     tmp = output_path.with_suffix(output_path.suffix + ".tmp")
-    tmp.write_text(json.dumps(results, indent=2, ensure_ascii=False))
+    tmp.write_text(_dumps(results) + "\n")
     os.replace(tmp, output_path)
 
 
