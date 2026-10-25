@@ -4,7 +4,7 @@
       "vendor": "nvidia",
       "chip": "H800",
       "measured": {
-        "memory_gib": 79.171,
+        "memory_gib": 79.1,
         "bandwidth_gbps": 3230.0,
         "tensor": {
           "bf16": 958.73,
@@ -16,11 +16,11 @@
           "fp8": 1778.93
         },
         "vector": {
-          "bf16": 66.727,
-          "fp16": 66.726,
-          "fp32": 66.383,
-          "int8": 133.453,
-          "fp64": 1.045,
+          "bf16": 66.73,
+          "fp16": 66.73,
+          "fp32": 66.38,
+          "int8": 133.45,
+          "fp64": 1.05,
           "fp8": null
         }
       }
@@ -29,23 +29,23 @@
       "vendor": "nvidia",
       "chip": "H100",
       "measured": {
-        "memory_gib": 79.109,
+        "memory_gib": 79.1,
         "bandwidth_gbps": 3230.0,
         "tensor": {
-          "bf16": 951.87,
-          "fp16": 935.489,
-          "fp32": 48.597,
-          "tf32": 480.614,
-          "int8": 1908.944,
+          "bf16": 958.73,
+          "fp16": 935.49,
+          "fp32": 48.6,
+          "tf32": 480.61,
+          "int8": 1908.94,
           "fp64": 61.84,
-          "fp8": 1864.753
+          "fp8": 1864.75
         },
         "vector": {
-          "bf16": 66.724,
-          "fp16": 66.724,
-          "fp32": 65.892,
-          "int8": 133.493,
-          "fp64": 30.772,
+          "bf16": 66.72,
+          "fp16": 66.72,
+          "fp32": 65.89,
+          "int8": 133.49,
+          "fp64": 30.77,
           "fp8": null
         }
       }
@@ -55,22 +55,22 @@
       "chip": "PPU-ZW810E",
       "measured": {
         "memory_gib": 96.0,
-        "bandwidth_gbps": 2140.71,
+        "bandwidth_gbps": 2140.7,
         "tensor": {
           "bf16": 56.23,
-          "fp16": 56.219,
-          "fp32": 26.189,
-          "tf32": 37.837,
-          "int8": 53.866,
-          "fp64": 6.927,
+          "fp16": 56.22,
+          "fp32": 26.19,
+          "tf32": 37.84,
+          "int8": 53.87,
+          "fp64": 6.93,
           "fp8": null
         },
         "vector": {
-          "bf16": 55.315,
-          "fp16": 55.305,
-          "fp32": 27.671,
-          "int8": 27.501,
-          "fp64": 6.396,
+          "bf16": 55.32,
+          "fp16": 55.31,
+          "fp32": 27.67,
+          "int8": 27.5,
+          "fp64": 6.4,
           "fp8": null
         }
       }
@@ -80,21 +80,21 @@
       "chip": "S60",
       "measured": {
         "memory_gib": 48.0,
-        "bandwidth_gbps": 485.55,
+        "bandwidth_gbps": 485.6,
         "tensor": {
-          "bf16": 129.801,
-          "fp16": 129.818,
-          "fp32": 32.691,
+          "bf16": 129.8,
+          "fp16": 129.82,
+          "fp32": 32.69,
           "tf32": null,
-          "int8": 259.624,
+          "int8": 259.62,
           "fp64": null,
           "fp8": null
         },
         "vector": {
-          "bf16": 1.746,
-          "fp16": 1.748,
-          "fp32": 1.958,
-          "int8": 1.776,
+          "bf16": 1.75,
+          "fp16": 1.75,
+          "fp32": 1.96,
+          "int8": 1.78,
           "fp64": null,
           "fp8": null
         }
@@ -104,22 +104,22 @@
       "vendor": "ascend",
       "chip": "Ascend910B4",
       "measured": {
-        "memory_gib": 60.957,
-        "bandwidth_gbps": 1257.83,
+        "memory_gib": 61.0,
+        "bandwidth_gbps": 1257.8,
         "tensor": {
-          "bf16": 33.724,
-          "fp16": 33.598,
-          "fp32": 20.264,
+          "bf16": 33.72,
+          "fp16": 33.6,
+          "fp32": 20.26,
           "tf32": null,
-          "int8": 67.321,
+          "int8": 67.32,
           "fp64": null,
           "fp8": null
         },
         "vector": {
-          "bf16": 1.659,
-          "fp16": 2.075,
+          "bf16": 1.66,
+          "fp16": 2.08,
           "fp32": 1.66,
-          "int8": 0.628,
+          "int8": 0.63,
           "fp64": null,
           "fp8": null
         }
@@ -129,8 +129,8 @@
       "vendor": "metax",
       "chip": "C550",
       "measured": {
-        "memory_gib": 62.95,
-        "bandwidth_gbps": 1526.277,
+        "memory_gib": 63.0,
+        "bandwidth_gbps": 1526.3,
         "tensor": {
           "bf16": 273.99,
           "fp16": 267.35,
@@ -141,11 +141,11 @@
           "fp8": null
         },
         "vector": {
-          "bf16": null,
+          "bf16": 2.78,
           "fp16": 9.08,
-          "fp32": 35.979,
+          "fp32": 35.98,
           "int8": 9.08,
-          "fp64": 2.264,
+          "fp64": 2.26,
           "fp8": null
         }
       }
@@ -155,21 +155,21 @@
       "chip": "P800",
       "measured": {
         "memory_gib": 96.0,
-        "bandwidth_gbps": null,
+        "bandwidth_gbps": 667.6,
         "tensor": {
-          "bf16": 30.93,
-          "fp16": 30.93,
+          "bf16": 30.95,
+          "fp16": 30.96,
           "fp32": null,
-          "tf32": 30.92,
+          "tf32": 30.95,
           "int8": null,
           "fp64": null,
           "fp8": null
         },
         "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
+          "bf16": 1.17,
+          "fp16": 2.44,
+          "fp32": 2.54,
+          "int8": 0.12,
           "fp64": null,
           "fp8": null
         }
@@ -179,8 +179,8 @@
       "vendor": "mthreads",
       "chip": "MTT-S5000",
       "measured": {
-        "memory_gib": 79.73,
-        "bandwidth_gbps": 1369.09,
+        "memory_gib": 79.7,
+        "bandwidth_gbps": 1369.1,
         "tensor": {
           "bf16": 449.29,
           "fp16": 448.25,
@@ -191,10 +191,10 @@
           "fp8": 897.5
         },
         "vector": {
-          "bf16": 19.024,
-          "fp16": 19.012,
+          "bf16": 19.02,
+          "fp16": 19.01,
           "fp32": 16.95,
-          "int8": 12.683,
+          "int8": 12.68,
           "fp64": null,
           "fp8": null
         }
@@ -204,8 +204,8 @@
       "vendor": "hygon",
       "chip": "BW1000",
       "measured": {
-        "memory_gib": 63.72,
-        "bandwidth_gbps": 1529.47,
+        "memory_gib": 63.7,
+        "bandwidth_gbps": 1529.5,
         "tensor": {
           "bf16": 473.88,
           "fp16": 472.1,
@@ -213,13 +213,13 @@
           "tf32": 236.94,
           "int8": 947.74,
           "fp64": 30.46,
-          "fp8": null
+          "fp8": 477.39
         },
         "vector": {
-          "bf16": 7.337,
-          "fp16": 30.337,
-          "fp32": 15.194,
-          "int8": 15.226,
+          "bf16": 7.34,
+          "fp16": 30.34,
+          "fp32": 15.19,
+          "int8": 15.23,
           "fp64": 15.14,
           "fp8": null
         }
@@ -229,7 +229,7 @@
       "vendor": "iluvatar",
       "chip": "BI-V150",
       "measured": {
-        "memory_gib": 63.52,
+        "memory_gib": 63.5,
         "bandwidth_gbps": 1151.1,
         "tensor": {
           "bf16": 211.21,
@@ -241,60 +241,10 @@
           "fp8": null
         },
         "vector": {
-          "bf16": 30.778,
-          "fp16": 31.319,
-          "fp32": 15.316,
-          "int8": 15.997,
-          "fp64": null,
-          "fp8": null
-        }
-      }
-    },
-    {
-      "vendor": "tsingmicro",
-      "chip": "TX8110",
-      "measured": {
-        "memory_gib": null,
-        "bandwidth_gbps": null,
-        "tensor": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "tf32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      }
-    },
-    {
-      "vendor": "cambricon",
-      "chip": "MLU590-M9DE",
-      "measured": {
-        "memory_gib": 78.68,
-        "bandwidth_gbps": 2020.0,
-        "tensor": {
-          "bf16": 303.25,
-          "fp16": 303.34,
-          "fp32": 78.0,
-          "tf32": 153.12,
-          "int8": 602.86,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
+          "bf16": 30.78,
+          "fp16": 31.32,
+          "fp32": 15.32,
+          "int8": 16.0,
           "fp64": null,
           "fp8": null
         }
