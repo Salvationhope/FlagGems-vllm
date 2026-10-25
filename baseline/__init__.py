@@ -48,8 +48,7 @@
 OP_NAME import 本模块重建输入），因此它必须是无副作用、可重复调用的纯构造。
 
 采集器为每条 shape×dtype 记录写入（字段对齐《算子后端缺失性能基准方案参考.md》）：
-    config（若算子导出）、T_us、F_cuda、F_tensor、B_mem、
+    config（若算子导出）、T_us、latency_ms、F_cuda、F_tensor、B_mem、
     U_cuda/U_tensor/U_mem、U_bottle_neck、bottle_neck_unit、
-    num_kernels、per_kernel（逐 kernel 的 F/B/U 与拆分后的 T_us），
-    外加一组同值冗余的兼容旧字段。
+    num_kernels、per_kernel（逐 kernel 的 F/B/U 与拆分后的 T_us）。
 """

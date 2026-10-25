@@ -1,31 +1,8 @@
 {
-  "_source": "厂商带宽和算力汇总 - 基础规格表.csv",
-  "_note": "数据按 CSV《基础规格表》全量对齐。缺失值 null:保密(○)/不具备(/)/测试失败(Err/❌)/表中留空。>= 下界值已取下界数值(如 P900 的 >=350 取 350)。单位:显存 GiB,带宽 GB/s,浮点 TFLOPS,INT8 TOPS。",
   "chips": [
     {
-      "vendor": "英伟达",
+      "vendor": "nvidia",
       "chip": "H800",
-      "nominal": {
-        "memory_gib": 80.0,
-        "bandwidth_gbps": 3350.0,
-        "tensor": {
-          "bf16": 989.0,
-          "fp16": 989.0,
-          "fp32": 66.9,
-          "tf32": 494.5,
-          "int8": 1979.0,
-          "fp64": 1.0,
-          "fp8": 1979.0
-        },
-        "vector": {
-          "bf16": 134.0,
-          "fp16": 134.0,
-          "fp32": 67.0,
-          "int8": null,
-          "fp64": 1.0,
-          "fp8": null
-        }
-      },
       "measured": {
         "memory_gib": 79.171,
         "bandwidth_gbps": 3230.0,
@@ -49,29 +26,8 @@
       }
     },
     {
-      "vendor": "英伟达",
+      "vendor": "nvidia",
       "chip": "H100",
-      "nominal": {
-        "memory_gib": 80.0,
-        "bandwidth_gbps": 3350.0,
-        "tensor": {
-          "bf16": 989.4,
-          "fp16": 989.4,
-          "fp32": 66.9,
-          "tf32": 494.7,
-          "int8": 1978.9,
-          "fp64": 66.9,
-          "fp8": 1978.9
-        },
-        "vector": {
-          "bf16": 133.8,
-          "fp16": 133.8,
-          "fp32": 66.9,
-          "int8": null,
-          "fp64": 33.5,
-          "fp8": null
-        }
-      },
       "measured": {
         "memory_gib": 79.109,
         "bandwidth_gbps": 3230.0,
@@ -95,29 +51,8 @@
       }
     },
     {
-      "vendor": "平头哥",
+      "vendor": "thead",
       "chip": "PPU-ZW810E",
-      "nominal": {
-        "memory_gib": null,
-        "bandwidth_gbps": null,
-        "tensor": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "tf32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
       "measured": {
         "memory_gib": 96.0,
         "bandwidth_gbps": 2140.71,
@@ -141,75 +76,8 @@
       }
     },
     {
-      "vendor": "平头哥",
-      "chip": "m890",
-      "nominal": {
-        "memory_gib": null,
-        "bandwidth_gbps": null,
-        "tensor": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "tf32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
-      "measured": {
-        "memory_gib": 144.0,
-        "bandwidth_gbps": 2524.19,
-        "tensor": {
-          "bf16": 269.83,
-          "fp16": 269.81,
-          "fp32": 12.53,
-          "tf32": 80.33,
-          "int8": null,
-          "fp64": null,
-          "fp8": 74.74
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": 12.894,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      }
-    },
-    {
-      "vendor": "燧原",
+      "vendor": "enflame",
       "chip": "S60",
-      "nominal": {
-        "memory_gib": 48.0,
-        "bandwidth_gbps": 672.0,
-        "tensor": {
-          "bf16": 131.0,
-          "fp16": 131.0,
-          "fp32": 32.0,
-          "tf32": null,
-          "int8": 262.0,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
       "measured": {
         "memory_gib": 48.0,
         "bandwidth_gbps": 485.55,
@@ -233,75 +101,33 @@
       }
     },
     {
-      "vendor": "华为",
-      "chip": "Atlas 800T A3",
-      "nominal": {
-        "memory_gib": 128.0,
-        "bandwidth_gbps": null,
-        "tensor": {
-          "bf16": null,
-          "fp16": 752.0,
-          "fp32": null,
-          "tf32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
+      "vendor": "ascend",
+      "chip": "Ascend910B4",
       "measured": {
-        "memory_gib": 128.0,
-        "bandwidth_gbps": 3072.0,
+        "memory_gib": 60.957,
+        "bandwidth_gbps": 1257.83,
         "tensor": {
-          "bf16": 730.26,
-          "fp16": 752.46,
-          "fp32": 199.21,
+          "bf16": 33.724,
+          "fp16": 33.598,
+          "fp32": 20.264,
           "tf32": null,
-          "int8": 1460.53,
+          "int8": 67.321,
           "fp64": null,
           "fp8": null
         },
         "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
+          "bf16": 1.659,
+          "fp16": 2.075,
+          "fp32": 1.66,
+          "int8": 0.628,
           "fp64": null,
           "fp8": null
         }
       }
     },
     {
-      "vendor": "沐曦",
+      "vendor": "metax",
       "chip": "C550",
-      "nominal": {
-        "memory_gib": 64.0,
-        "bandwidth_gbps": 1800.0,
-        "tensor": {
-          "bf16": 320.0,
-          "fp16": 320.0,
-          "fp32": 40.0,
-          "tf32": 160.0,
-          "int8": 640.0,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
       "measured": {
         "memory_gib": 62.95,
         "bandwidth_gbps": 1526.277,
@@ -325,75 +151,8 @@
       }
     },
     {
-      "vendor": "昆仑芯",
-      "chip": "P900",
-      "nominal": {
-        "memory_gib": 96.0,
-        "bandwidth_gbps": 2600.0,
-        "tensor": {
-          "bf16": 350.0,
-          "fp16": 350.0,
-          "fp32": null,
-          "tf32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
-      "measured": {
-        "memory_gib": 96.0,
-        "bandwidth_gbps": 2554.93,
-        "tensor": {
-          "bf16": 342.75,
-          "fp16": 349.08,
-          "fp32": 138.7,
-          "tf32": 138.68,
-          "int8": 643.46,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      }
-    },
-    {
-      "vendor": "昆仑芯",
+      "vendor": "kunlunxin",
       "chip": "P800",
-      "nominal": {
-        "memory_gib": null,
-        "bandwidth_gbps": null,
-        "tensor": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "tf32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
       "measured": {
         "memory_gib": 96.0,
         "bandwidth_gbps": null,
@@ -417,29 +176,8 @@
       }
     },
     {
-      "vendor": "摩尔",
+      "vendor": "mthreads",
       "chip": "MTT-S5000",
-      "nominal": {
-        "memory_gib": 80.0,
-        "bandwidth_gbps": 1600.0,
-        "tensor": {
-          "bf16": 430.0,
-          "fp16": 430.0,
-          "fp32": 29.0,
-          "tf32": 215.0,
-          "int8": 860.0,
-          "fp64": 14.5,
-          "fp8": 860.0
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
       "measured": {
         "memory_gib": 79.73,
         "bandwidth_gbps": 1369.09,
@@ -463,29 +201,8 @@
       }
     },
     {
-      "vendor": "海光",
+      "vendor": "hygon",
       "chip": "BW1000",
-      "nominal": {
-        "memory_gib": 64.0,
-        "bandwidth_gbps": 1800.0,
-        "tensor": {
-          "bf16": 480.0,
-          "fp16": 480.0,
-          "fp32": 60.0,
-          "tf32": 240.0,
-          "int8": 960.0,
-          "fp64": 30.0,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
       "measured": {
         "memory_gib": 63.72,
         "bandwidth_gbps": 1529.47,
@@ -509,29 +226,8 @@
       }
     },
     {
-      "vendor": "天数",
+      "vendor": "iluvatar",
       "chip": "BI-V150",
-      "nominal": {
-        "memory_gib": 64.0,
-        "bandwidth_gbps": 1600.0,
-        "tensor": {
-          "bf16": 256.0,
-          "fp16": 256.0,
-          "fp32": 64.0,
-          "tf32": null,
-          "int8": 768.0,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
       "measured": {
         "memory_gib": 63.52,
         "bandwidth_gbps": 1151.1,
@@ -555,29 +251,8 @@
       }
     },
     {
-      "vendor": "清微智能",
+      "vendor": "tsingmicro",
       "chip": "TX8110",
-      "nominal": {
-        "memory_gib": null,
-        "bandwidth_gbps": null,
-        "tensor": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "tf32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
       "measured": {
         "memory_gib": null,
         "bandwidth_gbps": null,
@@ -601,75 +276,8 @@
       }
     },
     {
-      "vendor": "清微智能",
-      "chip": "REX1032",
-      "nominal": {
-        "memory_gib": 512.0,
-        "bandwidth_gbps": 800.0,
-        "tensor": {
-          "bf16": 512.0,
-          "fp16": 512.0,
-          "fp32": 12.0,
-          "tf32": 512.0,
-          "int8": 1024.0,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
-      "measured": {
-        "memory_gib": 473.0,
-        "bandwidth_gbps": 637.45,
-        "tensor": {
-          "bf16": 503.81,
-          "fp16": 503.81,
-          "fp32": 12.2,
-          "tf32": 444.8,
-          "int8": 1007.62,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      }
-    },
-    {
-      "vendor": "寒武纪",
+      "vendor": "cambricon",
       "chip": "MLU590-M9DE",
-      "nominal": {
-        "memory_gib": 80.0,
-        "bandwidth_gbps": 2250.0,
-        "tensor": {
-          "bf16": 330.0,
-          "fp16": 330.0,
-          "fp32": 82.5,
-          "tf32": 165.0,
-          "int8": 660.0,
-          "fp64": null,
-          "fp8": null
-        },
-        "vector": {
-          "bf16": null,
-          "fp16": null,
-          "fp32": null,
-          "int8": null,
-          "fp64": null,
-          "fp8": null
-        }
-      },
       "measured": {
         "memory_gib": 78.68,
         "bandwidth_gbps": 2020.0,

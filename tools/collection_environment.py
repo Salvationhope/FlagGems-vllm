@@ -1,11 +1,9 @@
 """Best-effort provenance for a baseline run; probes never require extra packages."""
 
-from datetime import datetime, timezone
 from importlib import metadata
 import importlib
 import json
 import os
-from pathlib import Path
 import platform
 import subprocess
 import uuid
@@ -97,7 +95,6 @@ def collect_environment(torch, run):
     Missing tools/optional dependencies are represented by null. Only explicitly
     selected environment variables are recorded, never the full process environment.
     """
-    root = Path(__file__).resolve().parent.parent
     gpu = {"name": None, "uuid": None, "total_memory_bytes": None,
            "total_memory_gib": None,
            "compute_capability": None, "multiprocessor_count": None,
@@ -118,10 +115,7 @@ def collect_environment(torch, run):
     # UUID selection respects CUDA_VISIBLE_DEVICES remapping. Never use a CUDA
     # logical ordinal as an nvidia-smi physical index (including on MIG systems).
     gpu["driver_version"] = _driver_version(gpu["uuid"])
-    status = _command(["git", "status", "--porcelain", "--untracked-files=normal"], root)
     return {
-        "schema_version": 1,
-        "collected_at_utc": datetime.now(timezone.utc).isoformat(),
         "hardware": {"gpu": gpu, **_cpu_info()},
         "software": {
             "os": platform.system(), "os_release": platform.release(),
@@ -131,11 +125,6 @@ def collect_environment(torch, run):
             "torch_cuda_version": getattr(getattr(torch, "version", None), "cuda", None),
             "nvcc_version": _command(["nvcc", "--version"]),
             "ncu_version": _command(["ncu", "--version"]),
-        },
-        "source": {
-            "git_commit": _command(["git", "rev-parse", "HEAD"], root),
-            "git_branch": _command(["git", "rev-parse", "--abbrev-ref", "HEAD"], root),
-            "git_dirty": None if status is None else bool(status),
         },
         "run": json.loads(json.dumps(run)),
         "environment_variables": {name: os.environ.get(name) for name in

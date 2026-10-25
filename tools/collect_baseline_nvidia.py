@@ -53,7 +53,6 @@ UTIL = {
     "tensor_core": "sm__pipe_tensor_cycles_active.avg.pct_of_peak_sustained_elapsed",
     "memory_bw": "gpu__dram_throughput.avg.pct_of_peak_sustained_elapsed",
 }
-SM_UTIL = "sm__throughput.avg.pct_of_peak_sustained_elapsed"
 # Per-kernel GPU duration: only used to split end-to-end T across kernels by ratio.
 DURATION = "gpu__time_duration.sum"
 KERNEL_NAME_COL = "Kernel Name"
@@ -70,28 +69,18 @@ OPS_DIR = Path(__file__).resolve().parent.parent / "baseline"
 # reference chip (H800 by default) for cross-chip normalization.
 HARDWARE_SPECS_PATH = Path(__file__).with_name("hardware_specs.json")
 DEFAULT_REFERENCE_CHIP = "H800"
-# Chinese vendor name -> runtime vendor_name (lowercase, matches flaggems_vllm).
-_VENDOR_ZH_TO_EN = {
-    "英伟达": "nvidia", "平头哥": "t-head", "燧原": "enflame", "华为": "ascend",
-    "沐曦": "metax", "昆仑芯": "kunlunxin", "摩尔": "mthreads", "海光": "hygon",
-    "天数": "iluvatar", "清微智能": "tsingmicro", "寒武纪": "cambricon",
-}
+# vendor_name in hardware_specs.json is already the runtime vendor_name
+# (lowercase, matches flaggems_vllm).
 _TENSOR_DTYPES = ("bf16", "fp16", "fp32", "tf32", "int8", "fp64", "fp8")
 _VECTOR_DTYPES = ("bf16", "fp16", "fp32", "int8", "fp64", "fp8")
 
 
-def _empty_result(report_path=None):
+def _empty_result():
     return {
         "F_cuda": 0.0, "F_tensor": 0.0, "B_mem": 0.0,
         "U_cuda": 0.0, "U_tensor": 0.0, "U_mem": 0.0,
         "U_bottle_neck": 0.0, "bottle_neck_unit": None,
         "num_kernels": 0, "per_kernel": [],
-        # Legacy fields (redundant duplicates kept for existing downstream readers).
-        "flops_cuda_core": 0.0, "flops_tensor_core": 0.0, "memory_bytes": 0.0,
-        "util_cuda_core": 0.0, "util_tensor_core": 0.0, "util_memory_bw": 0.0,
-        "bottleneck": None, "bottleneck_util": 0.0,
-        "cuda_flops": 0.0, "sm_utilization": 0.0,
-        "report_path": report_path,
     }
 
 
@@ -216,8 +205,7 @@ def _build_per_kernel(agg, tensor_metric):
 def profile_with_ncu(op_name, profile_script, shape, dtype_str,
                      report_dir=None):
     tensor_metric = FLOP_TENSOR_CORE.get(dtype_str)
-    metrics = list(FLOP_CUDA_CORE) + [MEMORY_BYTES, *UTIL.values(), SM_UTIL,
-                                      DURATION]
+    metrics = list(FLOP_CUDA_CORE) + [MEMORY_BYTES, *UTIL.values(), DURATION]
     if tensor_metric:
         metrics.append(tensor_metric)
 
@@ -267,7 +255,7 @@ def profile_with_ncu(op_name, profile_script, shape, dtype_str,
         if imp.returncode != 0:
             print(f"  ✗ NCU import failed (code={imp.returncode}): "
                   f"{_err_msg(imp)}")
-            return _empty_result(report_path)
+            return _empty_result()
 
         agg = _parse_ncu_csv(imp.stdout, metrics)
 
@@ -306,18 +294,6 @@ def profile_with_ncu(op_name, profile_script, shape, dtype_str,
             "bottle_neck_unit": _unit.get(bottleneck),
             "num_kernels": len(per_kernel),
             "per_kernel": per_kernel,
-            # Legacy fields (redundant duplicates).
-            "flops_cuda_core": flops_cuda,
-            "flops_tensor_core": flops_tensor,
-            "memory_bytes": mem_bytes,
-            "util_cuda_core": util["cuda_core"],
-            "util_tensor_core": util["tensor_core"],
-            "util_memory_bw": util["memory_bw"],
-            "bottleneck": bottleneck,
-            "bottleneck_util": util[bottleneck] if bottleneck else 0.0,
-            "cuda_flops": flops_cuda,
-            "sm_utilization": mean_pct(SM_UTIL),
-            "report_path": report_path,
         }
     finally:
         try:
@@ -384,15 +360,11 @@ def build_scaling_factors(specs_path=HARDWARE_SPECS_PATH,
     for c in chips:
         # The reference chip is listed too (1.0 against itself, null where missing).
         entries.append({
-            "vendor": _VENDOR_ZH_TO_EN.get(c.get("vendor"), c.get("vendor")),
-            "vendor_zh": c.get("vendor"),
+            "vendor": c.get("vendor"),
             "chip": c.get("chip"),
-            "nominal": _factors_for_block(c.get("nominal"), ref.get("nominal")),
             "measured": _factors_for_block(c.get("measured"), ref.get("measured")),
         })
     return {
-        "_note": (f"factor = vendor_peak / {reference_chip}_peak; "
-                  "null means numerator or denominator missing; nominal/measured each."),
         "reference_chip": reference_chip,
         "source_specs": specs_path.name,
         "chips": entries,
@@ -515,8 +487,8 @@ def _collect_one_op_ops(op_module, report_dir,
                 cfg = op_module.config(binding, dtype)
             per_dtype[dtype_str] = _finalize_record(latency_ms, ncu, config=cfg)
 
-            bn = ncu["bottleneck"]
-            suffix = (f"  bottleneck={bn} ({ncu['bottleneck_util']*100:.1f}%)"
+            bn = ncu["bottle_neck_unit"]
+            suffix = (f"  bottleneck={bn} ({ncu['U_bottle_neck']:.1f}%)"
                       if bn else "")
             print(f"  {shape} {dtype_str}: {latency_ms:.4f} ms{suffix}")
 
@@ -687,11 +659,9 @@ def collect_baseline(output_path,
 
     results["_environment"] = collect_environment(torch, {
         "device": device,
-        "report_dir": str(report_dir) if report_dir is not None else None,
-        "output_path": str(output_path), "op_timeout_seconds": op_timeout,
+        "op_timeout_seconds": op_timeout,
         "reference_chip": reference_chip,
         "only": sorted(only) if only is not None else None,
-        "selected_ops": [name for name, _ in ops_modules],
         "latency_warmup_ms": 25, "latency_rep_ms": 100,
         "ncu_warmup_calls": 3,
     })
