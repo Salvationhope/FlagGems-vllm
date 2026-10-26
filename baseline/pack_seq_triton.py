@@ -57,8 +57,7 @@ def native():
 
 
 def grid():
-    return [{"N": n, "D": d, "B": b, "lengths": list(ls)}
-            for (n, d, b, ls) in _SHAPES]
+    return [{"N": n, "D": d, "B": b, "lengths": list(ls)} for (n, d, b, ls) in _SHAPES]
 
 
 def build_inputs(binding, dtype, device):
@@ -80,8 +79,7 @@ def config(binding, dtype):
     return {
         "inputs": {
             "x": {"shape": [n, d], "dtype": dt},
-            "lengths": {"shape": [b], "dtype": "torch.int32",
-                        "values": lengths},
+            "lengths": {"shape": [b], "dtype": "torch.int32", "values": lengths},
         },
         "outputs": {
             "packed": {"shape": [b, lmax, d], "dtype": dt},

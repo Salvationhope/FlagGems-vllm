@@ -93,8 +93,7 @@ def build_inputs(binding, dtype, device):
     A = _rand_fp8((m, k), device, dtype).contiguous()
     B = _rand_fp8((n, k), device, dtype).contiguous()
     As = (
-        0.01 * torch.rand((m, num_k_groups), dtype=torch.float32, device=device)
-        + 0.005
+        0.01 * torch.rand((m, num_k_groups), dtype=torch.float32, device=device) + 0.005
     ).contiguous()
     Bs = (
         0.01
@@ -117,10 +116,11 @@ def config(binding, dtype):
             "A": {"shape": [m, k], "dtype": "torch.float8_e4m3fn"},
             "B": {"shape": [n, k], "dtype": "torch.float8_e4m3fn"},
             "As": {"shape": [m, _cdiv(k, block_k)], "dtype": "torch.float32"},
-            "Bs": {"shape": [_cdiv(n, block_n), _cdiv(k, block_k)],
-                   "dtype": "torch.float32"},
+            "Bs": {
+                "shape": [_cdiv(n, block_n), _cdiv(k, block_k)],
+                "dtype": "torch.float32",
+            },
         },
         "outputs": {"out": {"shape": [m, n], "dtype": "torch.float16"}},
-        "dims": {"M": m, "N": n, "K": k,
-                 "block_n": block_n, "block_k": block_k},
+        "dims": {"M": m, "N": n, "K": k, "block_n": block_n, "block_k": block_k},
     }

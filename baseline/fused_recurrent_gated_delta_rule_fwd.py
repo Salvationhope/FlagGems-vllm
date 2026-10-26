@@ -60,17 +60,61 @@ _SCALE = 0.08838834764831845
 # benchmark self.shapes：core_shapes 基础档 ∪ set_more_shapes()（去重升序）。
 _BASE_T = [1, 64, 184, 256, 512]
 _MORE_T = [
-    1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 72, 80, 88, 96, 104, 112, 120, 128,
-    136, 144, 152, 160, 168, 176, 192, 200, 208, 216, 224, 232, 240, 248,
-    272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496,
+    1,
+    2,
+    4,
+    8,
+    16,
+    24,
+    32,
+    40,
+    48,
+    56,
+    72,
+    80,
+    88,
+    96,
+    104,
+    112,
+    120,
+    128,
+    136,
+    144,
+    152,
+    160,
+    168,
+    176,
+    192,
+    200,
+    208,
+    216,
+    224,
+    232,
+    240,
+    248,
+    272,
+    288,
+    304,
+    320,
+    336,
+    352,
+    368,
+    384,
+    400,
+    416,
+    432,
+    448,
+    464,
+    480,
+    496,
 ]
 _SEQ_LENS = sorted(set(_BASE_T) | set(_MORE_T))
 
-_KEY_DIM = _H * _K          # 2048
-_VALUE_DIM = _HV * _V       # 4096
+_KEY_DIM = _H * _K  # 2048
+_VALUE_DIM = _HV * _V  # 4096
 _MIXED_QKV_DIM = (2 * _KEY_DIM + _VALUE_DIM) // _TP  # 2048
-_HV_LOCAL = (_VALUE_DIM // _TP) // _V               # 8
-_H_LOCAL = (_KEY_DIM // _TP) // _K                  # 4
+_HV_LOCAL = (_VALUE_DIM // _TP) // _V  # 8
+_H_LOCAL = (_KEY_DIM // _TP) // _K  # 4
 
 
 def native():
@@ -96,30 +140,39 @@ def grid():
 def build_inputs(binding, dtype, device):
     T = binding["T"]
     total_tokens = _B * T
-    mixed_qkv = torch.randn(total_tokens, _MIXED_QKV_DIM, dtype=dtype,
-                            device=device)
+    mixed_qkv = torch.randn(total_tokens, _MIXED_QKV_DIM, dtype=dtype, device=device)
     # split[key_dim//tp, key_dim//tp, value_dim//tp] along dim=-1（切片等价
     # torch.split，兼容离线冒烟 stub）
     kq = _KEY_DIM // _TP
     vq = _VALUE_DIM // _TP
     q = mixed_qkv[:, :kq]
-    k = mixed_qkv[:, kq:2 * kq]
-    v = mixed_qkv[:, 2 * kq:2 * kq + vq]
+    k = mixed_qkv[:, kq : 2 * kq]
+    v = mixed_qkv[:, 2 * kq : 2 * kq + vq]
     q = q.view(1, q.shape[0], -1, _K)
     k = k.view(1, k.shape[0], -1, _K)
     v = v.view(1, v.shape[0], -1, _V)
 
     # torch.logsigmoid 等价 torch.nn.functional.logsigmoid（真 torch 两者皆有）
-    g = torch.logsigmoid(
-        torch.randn(_B, T, _HV_LOCAL, dtype=dtype, device=device))
+    g = torch.logsigmoid(torch.randn(_B, T, _HV_LOCAL, dtype=dtype, device=device))
     beta = torch.rand(_B, T, _HV_LOCAL, dtype=dtype, device=device).sigmoid()
     cu_seqlens = torch.arange(T + 1, device=device, dtype=torch.int64)
-    initial_state = torch.zeros(1024, _HV_LOCAL, _K, _V, dtype=dtype,
-                                device=device)
+    initial_state = torch.zeros(1024, _HV_LOCAL, _K, _V, dtype=dtype, device=device)
     ssm_state_indices = torch.zeros(T, device=device, dtype=torch.int64)
 
-    args = (q, k, v, g, beta, _SCALE, initial_state, True, cu_seqlens,
-            ssm_state_indices, None, True)
+    args = (
+        q,
+        k,
+        v,
+        g,
+        beta,
+        _SCALE,
+        initial_state,
+        True,
+        cu_seqlens,
+        ssm_state_indices,
+        None,
+        True,
+    )
     return args, {}
 
 
@@ -148,7 +201,12 @@ def config(binding, dtype):
             "final_state": {"note": "inplace_final_state=True，写回 initial_state"},
         },
         "dims": {
-            "B": _B, "T": T, "H_local": _H_LOCAL, "HV_local": _HV_LOCAL,
-            "K": _K, "V": _V, "tp_size": _TP,
+            "B": _B,
+            "T": T,
+            "H_local": _H_LOCAL,
+            "HV_local": _HV_LOCAL,
+            "K": _K,
+            "V": _V,
+            "tp_size": _TP,
         },
     }

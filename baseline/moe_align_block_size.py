@@ -67,8 +67,10 @@ def native():
 
 
 def grid():
-    return [{"num_experts": e, "block_size": b, "num_tokens": t, "topk": k}
-            for (e, b, t, k) in _SHAPES]
+    return [
+        {"num_experts": e, "block_size": b, "num_tokens": t, "topk": k}
+        for (e, b, t, k) in _SHAPES
+    ]
 
 
 def build_inputs(binding, dtype, device):
@@ -78,19 +80,21 @@ def build_inputs(binding, dtype, device):
     k = binding["topk"]
     topk_ids = torch.randint(0, e, (t, k), dtype=torch.int32, device=device)
     max_num_tokens_padded = ((e + _WARP_SIZE - 1) // _WARP_SIZE) * _WARP_SIZE
-    sorted_ids = torch.empty((max_num_tokens_padded,), dtype=torch.int32,
-                             device=device)
+    sorted_ids = torch.empty((max_num_tokens_padded,), dtype=torch.int32, device=device)
     max_num_m_blocks = max_num_tokens_padded // b
-    expert_ids = torch.empty((max_num_m_blocks,), dtype=torch.int32,
-                             device=device)
+    expert_ids = torch.empty((max_num_m_blocks,), dtype=torch.int32, device=device)
     num_tokens_post_pad = torch.empty(1, dtype=torch.int32, device=device)
     args = (topk_ids, e, b, sorted_ids, expert_ids, num_tokens_post_pad)
     return args, {}
 
 
 def key_shape(binding):
-    return [binding["num_experts"], binding["block_size"],
-            binding["num_tokens"], binding["topk"]]
+    return [
+        binding["num_experts"],
+        binding["block_size"],
+        binding["num_tokens"],
+        binding["topk"],
+    ]
 
 
 def config(binding, dtype):
@@ -104,20 +108,32 @@ def config(binding, dtype):
             "topk_ids": {"shape": [t, k], "dtype": "torch.int32"},
             "num_experts": {"scalar": e},
             "block_size": {"scalar": b},
-            "sorted_token_ids": {"shape": [max_num_tokens_padded],
-                                 "dtype": "torch.int32", "note": "原地写回"},
-            "experts_ids": {"shape": [max_num_tokens_padded // b],
-                            "dtype": "torch.int32", "note": "原地写回"},
-            "num_tokens_post_pad": {"shape": [1], "dtype": "torch.int32",
-                                    "note": "原地写回"},
+            "sorted_token_ids": {
+                "shape": [max_num_tokens_padded],
+                "dtype": "torch.int32",
+                "note": "原地写回",
+            },
+            "experts_ids": {
+                "shape": [max_num_tokens_padded // b],
+                "dtype": "torch.int32",
+                "note": "原地写回",
+            },
+            "num_tokens_post_pad": {
+                "shape": [1],
+                "dtype": "torch.int32",
+                "note": "原地写回",
+            },
         },
         "outputs": {
-            "sorted_token_ids": {"shape": [max_num_tokens_padded],
-                                 "dtype": "torch.int32"},
-            "experts_ids": {"shape": [max_num_tokens_padded // b],
-                            "dtype": "torch.int32"},
+            "sorted_token_ids": {
+                "shape": [max_num_tokens_padded],
+                "dtype": "torch.int32",
+            },
+            "experts_ids": {
+                "shape": [max_num_tokens_padded // b],
+                "dtype": "torch.int32",
+            },
             "num_tokens_post_pad": {"shape": [1], "dtype": "torch.int32"},
         },
-        "dims": {"num_experts": e, "block_size": b,
-                 "num_tokens": t, "topk": k},
+        "dims": {"num_experts": e, "block_size": b, "num_tokens": t, "topk": k},
     }

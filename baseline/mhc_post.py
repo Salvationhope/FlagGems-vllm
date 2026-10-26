@@ -85,9 +85,7 @@ def build_inputs(binding, dtype, device):
     x = torch.randn(n, h, dtype=dtype, device=device)
     residual = torch.randn(n, hc_mult, h, dtype=dtype, device=device)
     post_layer_mix = torch.randn(n, hc_mult, 1, dtype=torch.float32, device=device)
-    comb_res_mix = torch.randn(
-        n, hc_mult, hc_mult, dtype=torch.float32, device=device
-    )
+    comb_res_mix = torch.randn(n, hc_mult, hc_mult, dtype=torch.float32, device=device)
 
     args = (x, residual, post_layer_mix, comb_res_mix)
     return args, {}

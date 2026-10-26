@@ -95,10 +95,13 @@ def native():
 
 
 def grid():
-    homo = [{"kind": "homo", "num_rows": r, "seq_len": s, "max_seq_len": m}
-            for (r, s, m) in _SHAPES]
-    hetero = [{"kind": "hetero", "num_rows": r, "max_len": ml}
-              for (r, ml) in _HETERO_SHAPES]
+    homo = [
+        {"kind": "homo", "num_rows": r, "seq_len": s, "max_seq_len": m}
+        for (r, s, m) in _SHAPES
+    ]
+    hetero = [
+        {"kind": "hetero", "num_rows": r, "max_len": ml} for (r, ml) in _HETERO_SHAPES
+    ]
     return homo + hetero
 
 
@@ -112,16 +115,16 @@ def build_inputs(binding, dtype, device):
         ml = binding["max_len"]
         hi = min(ml, _STRIDE)
         lengths = torch.linspace(1, hi, r, device=device).to(torch.int32)
-        logits = torch.full((r, _STRIDE), float("-inf"),
-                            dtype=torch.float32, device=device)
+        logits = torch.full(
+            (r, _STRIDE), float("-inf"), dtype=torch.float32, device=device
+        )
         for i in range(r):
             sl = int(lengths[i].item())
             logits[i, :sl] = torch.randn(sl, device=device)
         return (logits, lengths, indices, workspace, _K, ml), {}
 
     s, m = binding["seq_len"], binding["max_seq_len"]
-    logits = torch.full((r, _STRIDE), float("-inf"),
-                        dtype=torch.float32, device=device)
+    logits = torch.full((r, _STRIDE), float("-inf"), dtype=torch.float32, device=device)
     logits[:, :s] = torch.randn(r, s, device=device)
     lengths = torch.full((r,), s, dtype=torch.int32, device=device)
     return (logits, lengths, indices, workspace, _K, m), {}
@@ -151,23 +154,40 @@ def config(binding, dtype):
             # 标量（benchmark record 未含 k，k 写死在 gems/baseline 调用里）。
             # build_inputs 的实采参数不受影响。
             "inputs": {
-                "logits": {"shape": [r, _STRIDE], "dtype": "torch.float32",
-                           "note": "各行 seq_len=linspace(1,min(max_len,STRIDE),nr)，"
-                                   "其余 -inf"},
-                "lengths": {"shape": [r], "dtype": "torch.int32",
-                            "note": "异构：逐行不等"},
-                "output": {"shape": [r, _K], "dtype": "torch.int32",
-                           "note": "原地写回（top-k 索引）"},
+                "logits": {
+                    "shape": [r, _STRIDE],
+                    "dtype": "torch.float32",
+                    "note": "各行 seq_len=linspace(1,min(max_len,STRIDE),nr)，"
+                    "其余 -inf",
+                },
+                "lengths": {
+                    "shape": [r],
+                    "dtype": "torch.int32",
+                    "note": "异构：逐行不等",
+                },
+                "output": {
+                    "shape": [r, _K],
+                    "dtype": "torch.int32",
+                    "note": "原地写回（top-k 索引）",
+                },
                 "workspace": {"shape": [_WORKSPACE_SIG], "dtype": "torch.uint8"},
                 "max_seq_len": {"scalar": ml},
-                "seq_lens": {"shape": [r], "dtype": "torch.int32",
-                             "note": "benchmark 第 6 参，逐行 seq_len"},
+                "seq_lens": {
+                    "shape": [r],
+                    "dtype": "torch.int32",
+                    "note": "benchmark 第 6 参，逐行 seq_len",
+                },
             },
             "outputs": {
                 "output": {"shape": [r, _K], "dtype": "torch.int32"},
             },
-            "dims": {"kind": "hetero", "num_rows": r, "max_len": ml,
-                     "K": _K, "STRIDE": _STRIDE},
+            "dims": {
+                "kind": "hetero",
+                "num_rows": r,
+                "max_len": ml,
+                "K": _K,
+                "STRIDE": _STRIDE,
+            },
         }
 
     s, m = binding["seq_len"], binding["max_seq_len"]
@@ -175,19 +195,34 @@ def config(binding, dtype):
         # 签名匹配口径对齐 benchmark record（见 hetero 分支注释）：补 seq_lens、
         # workspace 用 2MB、去掉 k 标量。
         "inputs": {
-            "logits": {"shape": [r, _STRIDE], "dtype": "torch.float32",
-                       "note": f"前 seq_len={s} 有效，其余 -inf"},
+            "logits": {
+                "shape": [r, _STRIDE],
+                "dtype": "torch.float32",
+                "note": f"前 seq_len={s} 有效，其余 -inf",
+            },
             "lengths": {"shape": [r], "dtype": "torch.int32"},
-            "output": {"shape": [r, _K], "dtype": "torch.int32",
-                       "note": "原地写回（top-k 索引）"},
+            "output": {
+                "shape": [r, _K],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）",
+            },
             "workspace": {"shape": [_WORKSPACE_SIG], "dtype": "torch.uint8"},
             "max_seq_len": {"scalar": m},
-            "seq_lens": {"shape": [r], "dtype": "torch.int32",
-                         "note": "benchmark 第 6 参，逐行 seq_len"},
+            "seq_lens": {
+                "shape": [r],
+                "dtype": "torch.int32",
+                "note": "benchmark 第 6 参，逐行 seq_len",
+            },
         },
         "outputs": {
             "output": {"shape": [r, _K], "dtype": "torch.int32"},
         },
-        "dims": {"kind": "homo", "num_rows": r, "seq_len": s, "max_seq_len": m,
-                 "K": _K, "STRIDE": _STRIDE},
+        "dims": {
+            "kind": "homo",
+            "num_rows": r,
+            "seq_len": s,
+            "max_seq_len": m,
+            "K": _K,
+            "STRIDE": _STRIDE,
+        },
     }

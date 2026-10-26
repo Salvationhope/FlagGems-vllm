@@ -118,7 +118,7 @@ def config(binding, dtype):
         },
         "dims": {"num_tokens": t, "hidden": h},
         "shape_source": "test_gemma_rms_norm.py GemmaRmsNormBenchmark.set_shapes "
-                        "(product(ms,ns))",
+        "(product(ms,ns))",
         "note": "native 为 vllm.ir.ops.rms_norm（Gemma NV 路径为 eager 实现，"
-                "无专用融合 CUDA kernel）",
+        "无专用融合 CUDA kernel）",
     }

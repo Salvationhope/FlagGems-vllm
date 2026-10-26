@@ -76,9 +76,7 @@ def _make_routing(t, e, k, dtype, device):
     """(topk_weights, topk_ids)。真 torch 走 softmax+topk 并 .to(dtype)；stub 走占位。"""
     gating = torch.randn(t, e, dtype=torch.float32, device=device)
     if hasattr(torch, "topk") and hasattr(torch, "softmax"):
-        topk_weights, topk_ids = torch.topk(
-            torch.softmax(gating, dim=-1), k, dim=-1
-        )
+        topk_weights, topk_ids = torch.topk(torch.softmax(gating, dim=-1), k, dim=-1)
         topk_weights = topk_weights / topk_weights.sum(dim=-1, keepdim=True)
         topk_weights = topk_weights.to(dtype)
         return topk_weights, topk_ids
@@ -89,8 +87,7 @@ def _make_routing(t, e, k, dtype, device):
 
 def grid():
     return [
-        {"num_tokens": t, "num_experts": e, "hidden": h,
-         "intermediate": i, "topk": k}
+        {"num_tokens": t, "num_experts": e, "hidden": h, "intermediate": i, "topk": k}
         for (t, e, h, i, k) in _SHAPES
     ]
 
@@ -113,9 +110,11 @@ def build_inputs(binding, dtype, device):
 
 
 def key_shape(binding):
-    return (f"t{binding['num_tokens']}_e{binding['num_experts']}"
-            f"_h{binding['hidden']}_i{binding['intermediate']}"
-            f"_topk{binding['topk']}")
+    return (
+        f"t{binding['num_tokens']}_e{binding['num_experts']}"
+        f"_h{binding['hidden']}_i{binding['intermediate']}"
+        f"_topk{binding['topk']}"
+    )
 
 
 def config(binding, dtype):
@@ -134,6 +133,11 @@ def config(binding, dtype):
             "activation": {"scalar": "silu"},
         },
         "outputs": {"output": {"shape": [t, h], "dtype": str(dtype)}},
-        "dims": {"num_tokens": t, "num_experts": e, "hidden": h,
-                 "intermediate": i, "topk": k},
+        "dims": {
+            "num_tokens": t,
+            "num_experts": e,
+            "hidden": h,
+            "intermediate": i,
+            "topk": k,
+        },
     }

@@ -67,8 +67,7 @@ def native():
 
 
 def grid():
-    return [{"num_tokens": t, "num_experts": e, "topk": k}
-            for (t, e, k) in _SHAPES]
+    return [{"num_tokens": t, "num_experts": e, "topk": k} for (t, e, k) in _SHAPES]
 
 
 def build_inputs(binding, dtype, device):
@@ -99,12 +98,21 @@ def config(binding, dtype):
     dt = str(dtype)
     return {
         "inputs": {
-            "topk_weights": {"shape": [t, k], "dtype": "torch.float32",
-                             "note": "原地写回（输出）"},
-            "topk_indices": {"shape": [t, k], "dtype": "torch.int32",
-                             "note": "原地写回（输出）"},
-            "token_expert_indices": {"shape": [t, k], "dtype": "torch.int32",
-                                     "note": "原地写回（输出）"},
+            "topk_weights": {
+                "shape": [t, k],
+                "dtype": "torch.float32",
+                "note": "原地写回（输出）",
+            },
+            "topk_indices": {
+                "shape": [t, k],
+                "dtype": "torch.int32",
+                "note": "原地写回（输出）",
+            },
+            "token_expert_indices": {
+                "shape": [t, k],
+                "dtype": "torch.int32",
+                "note": "原地写回（输出）",
+            },
             "gating_output": {"shape": [t, e], "dtype": dt},
             "renormalize": {"scalar": _RENORMALIZE},
             "routed_scaling_factor": {"scalar": _ROUTED_SCALING_FACTOR},

@@ -68,9 +68,16 @@ def native():
 
 
 def grid():
-    return [{"num_tokens": nt, "num_blocks": nb, "block_size": bs,
-             "head_dim": hd, "quant_block_size": qbs}
-            for (nt, nb, bs, hd, qbs) in _SHAPES]
+    return [
+        {
+            "num_tokens": nt,
+            "num_blocks": nb,
+            "block_size": bs,
+            "head_dim": hd,
+            "quant_block_size": qbs,
+        }
+        for (nt, nb, bs, hd, qbs) in _SHAPES
+    ]
 
 
 def build_inputs(binding, dtype, device):
@@ -87,9 +94,13 @@ def build_inputs(binding, dtype, device):
 
 
 def key_shape(binding):
-    return [binding["num_tokens"], binding["num_blocks"],
-            binding["block_size"], binding["head_dim"],
-            binding["quant_block_size"]]
+    return [
+        binding["num_tokens"],
+        binding["num_blocks"],
+        binding["block_size"],
+        binding["head_dim"],
+        binding["quant_block_size"],
+    ]
 
 
 def config(binding, dtype):
@@ -102,8 +113,11 @@ def config(binding, dtype):
     return {
         "inputs": {
             "k": {"shape": [nt, hd], "dtype": repr(dtype)},
-            "kv_cache": {"shape": [nb, bs, cache_stride], "dtype": "torch.uint8",
-                         "note": "原地写回量化 K + scale"},
+            "kv_cache": {
+                "shape": [nb, bs, cache_stride],
+                "dtype": "torch.uint8",
+                "note": "原地写回量化 K + scale",
+            },
             "slot_mapping": {"shape": [nt], "dtype": "torch.int64"},
             "quant_block_size": {"scalar": qbs},
             "kv_cache_dtype": {"scalar": _KV_CACHE_DTYPE},
@@ -111,7 +125,12 @@ def config(binding, dtype):
         "outputs": {
             "kv_cache": {"shape": [nb, bs, cache_stride], "dtype": "torch.uint8"},
         },
-        "dims": {"num_tokens": nt, "num_blocks": nb, "block_size": bs,
-                 "head_dim": hd, "quant_block_size": qbs,
-                 "cache_stride": cache_stride},
+        "dims": {
+            "num_tokens": nt,
+            "num_blocks": nb,
+            "block_size": bs,
+            "head_dim": hd,
+            "quant_block_size": qbs,
+            "cache_stride": cache_stride,
+        },
     }

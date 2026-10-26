@@ -90,17 +90,19 @@ def _resolve_quant():
         from vllm.scalar_type import scalar_types
     except ImportError:
         return None
-    return (vllm_ops, marlin_permute_scales, mxfp4_marlin_process_scales,
-            scalar_types.float4_e2m1f)
+    return (
+        vllm_ops,
+        marlin_permute_scales,
+        mxfp4_marlin_process_scales,
+        scalar_types.float4_e2m1f,
+    )
 
 
 def _make_routing(t, e, k, device):
     """构造 (topk_weights fp32, topk_ids)。真 torch 走 softmax+topk；stub 走占位。"""
     gating = torch.randn(t, e, dtype=torch.float32, device=device)
     if hasattr(torch, "topk") and hasattr(torch, "softmax"):
-        topk_weights, topk_ids = torch.topk(
-            torch.softmax(gating, dim=-1), k, dim=-1
-        )
+        topk_weights, topk_ids = torch.topk(torch.softmax(gating, dim=-1), k, dim=-1)
         topk_weights = topk_weights / topk_weights.sum(dim=-1, keepdim=True)
         return topk_weights, topk_ids
     topk_weights = torch.rand(t, k, dtype=torch.float32, device=device)
@@ -115,18 +117,14 @@ def _quantize_mxfp4_2d(w_2d, group_size):
     device = w_2d.device
     wg = w_2d.reshape(out_dim, ng, group_size).to(torch.float32)
     amax = wg.abs().amax(dim=-1, keepdim=True)
-    exp = torch.ceil(
-        torch.log2((amax / _E2M1_MAX).clamp(min=1e-30))
-    ).clamp(-127, 127)
+    exp = torch.ceil(torch.log2((amax / _E2M1_MAX).clamp(min=1e-30))).clamp(-127, 127)
     scale = torch.exp2(exp)
     e8m0_byte = (exp + 127.0).to(torch.uint8)
     wn = wg / scale
     sign = wn < 0
     a = wn.abs().clamp(max=_E2M1_MAX)
     mag = torch.bucketize(a, torch.tensor(_E2M1_MID, device=device))
-    nibbles = (sign.to(torch.uint8) * 8 + mag.to(torch.uint8)).reshape(
-        out_dim, in_dim
-    )
+    nibbles = (sign.to(torch.uint8) * 8 + mag.to(torch.uint8)).reshape(out_dim, in_dim)
     scale_e8m0 = e8m0_byte.squeeze(-1).view(torch.float8_e8m0fnu)
     return nibbles, scale_e8m0
 
@@ -147,14 +145,15 @@ def _marlin_mxfp4_quantize_per_expert(w_fp, vllm_ops, permute, process):
         ms = process(ms, input_dtype=None).to(torch.float8_e8m0fnu)
         qweight_l.append(qw)
         scales_l.append(ms)
-    return (torch.stack(qweight_l, 0).contiguous(),
-            torch.stack(scales_l, 0).contiguous())
+    return (
+        torch.stack(qweight_l, 0).contiguous(),
+        torch.stack(scales_l, 0).contiguous(),
+    )
 
 
 def grid():
     return [
-        {"num_tokens": t, "num_experts": e, "hidden": h,
-         "intermediate": i, "topk": k}
+        {"num_tokens": t, "num_experts": e, "hidden": h, "intermediate": i, "topk": k}
         for (t, e, h, i, k) in _SHAPES
     ]
 
@@ -181,9 +180,16 @@ def build_inputs(binding, dtype, device):
             e, h, i // _MXFP4_GROUP_SIZE, dtype=torch.uint8, device=device
         )
         kwargs = dict(
-            hidden_states=hidden_states, w1=w1_q, w2=w2_q, bias1=None, bias2=None,
-            w1_scale=w1_s, w2_scale=w2_s, topk_weights=topk_weights,
-            topk_ids=topk_ids, quant_type_id=0,
+            hidden_states=hidden_states,
+            w1=w1_q,
+            w2=w2_q,
+            bias1=None,
+            bias2=None,
+            w1_scale=w1_s,
+            w2_scale=w2_s,
+            topk_weights=topk_weights,
+            topk_ids=topk_ids,
+            quant_type_id=0,
         )
         return (), kwargs
 
@@ -194,17 +200,26 @@ def build_inputs(binding, dtype, device):
     w2_q, w2_s = _marlin_mxfp4_quantize_per_expert(w2_fp, vllm_ops, permute, process)
 
     kwargs = dict(
-        hidden_states=hidden_states, w1=w1_q, w2=w2_q, bias1=None, bias2=None,
-        w1_scale=w1_s, w2_scale=w2_s, topk_weights=topk_weights,
-        topk_ids=topk_ids, quant_type_id=quant_type.id,
+        hidden_states=hidden_states,
+        w1=w1_q,
+        w2=w2_q,
+        bias1=None,
+        bias2=None,
+        w1_scale=w1_s,
+        w2_scale=w2_s,
+        topk_weights=topk_weights,
+        topk_ids=topk_ids,
+        quant_type_id=quant_type.id,
     )
     return (), kwargs
 
 
 def key_shape(binding):
-    return (f"t{binding['num_tokens']}_e{binding['num_experts']}"
-            f"_h{binding['hidden']}_i{binding['intermediate']}"
-            f"_topk{binding['topk']}")
+    return (
+        f"t{binding['num_tokens']}_e{binding['num_experts']}"
+        f"_h{binding['hidden']}_i{binding['intermediate']}"
+        f"_topk{binding['topk']}"
+    )
 
 
 def config(binding, dtype):
@@ -214,9 +229,12 @@ def config(binding, dtype):
     i = binding["intermediate"]
     k = binding["topk"]
     return {
-        "quant": {"scheme": "W4A16", "weight_type": "float4_e2m1f",
-                  "scale_type": "float8_e8m0fnu",
-                  "group_size": _MXFP4_GROUP_SIZE},
+        "quant": {
+            "scheme": "W4A16",
+            "weight_type": "float4_e2m1f",
+            "scale_type": "float8_e8m0fnu",
+            "group_size": _MXFP4_GROUP_SIZE,
+        },
         "inputs": {
             "hidden_states": {"shape": [t, h], "dtype": str(dtype)},
             "w1": {"shape": [e, i * 2, h], "note": "Marlin repacked FP4"},
@@ -225,6 +243,11 @@ def config(binding, dtype):
             "topk_ids": {"shape": [t, k], "dtype": "int64"},
         },
         "outputs": {"output": {"shape": [t, h], "dtype": str(dtype)}},
-        "dims": {"num_tokens": t, "num_experts": e, "hidden": h,
-                 "intermediate": i, "topk": k},
+        "dims": {
+            "num_tokens": t,
+            "num_experts": e,
+            "hidden": h,
+            "intermediate": i,
+            "topk": k,
+        },
     }

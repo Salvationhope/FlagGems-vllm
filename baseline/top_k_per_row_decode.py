@@ -76,8 +76,14 @@ def native():
 
 def grid():
     return [
-        {"num_rows": nr, "vocab_size": v, "next_n": nn,
-         "top_k": k, "stride0": s0, "stride1": s1}
+        {
+            "num_rows": nr,
+            "vocab_size": v,
+            "next_n": nn,
+            "top_k": k,
+            "stride0": s0,
+            "stride1": s1,
+        }
         for (nr, v, nn, k, s0, s1) in _SHAPES
     ]
 
@@ -111,10 +117,16 @@ def config(binding, dtype):
         "inputs": {
             "logits": {"shape": [nr, v], "dtype": "torch.float32"},
             "next_n": {"scalar": nn},
-            "seq_lens": {"shape": [batch_size], "dtype": "torch.int32",
-                         "note": "每行有效序列长度，此处 = vocab_size"},
-            "indices": {"shape": [nr, k], "dtype": "torch.int32",
-                        "note": "原地写回 top-k 索引"},
+            "seq_lens": {
+                "shape": [batch_size],
+                "dtype": "torch.int32",
+                "note": "每行有效序列长度，此处 = vocab_size",
+            },
+            "indices": {
+                "shape": [nr, k],
+                "dtype": "torch.int32",
+                "note": "原地写回 top-k 索引",
+            },
             "num_rows": {"scalar": nr},
             "stride0": {"scalar": binding["stride0"]},
             "stride1": {"scalar": binding["stride1"]},

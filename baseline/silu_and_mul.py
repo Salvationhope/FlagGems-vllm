@@ -89,8 +89,7 @@ def config(binding, dtype):
     return {
         "inputs": {
             "out": {"shape": out_shape, "dtype": dt, "note": "原地写回"},
-            "input": {"shape": in_shape, "dtype": dt,
-                      "note": "前半 gate / 后半 up"},
+            "input": {"shape": in_shape, "dtype": dt, "note": "前半 gate / 后半 up"},
         },
         "outputs": {
             "out": {"shape": out_shape, "dtype": dt},

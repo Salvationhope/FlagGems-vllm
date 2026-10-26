@@ -121,9 +121,7 @@ def _make_routing(t, e, k, device):
     benchmark 路由分布）；stub 无 topk/softmax 时直接造占位路由张量。"""
     gating = torch.randn(t, e, dtype=torch.float32, device=device)
     if hasattr(torch, "topk") and hasattr(torch, "softmax"):
-        topk_weights, topk_ids = torch.topk(
-            torch.softmax(gating, dim=-1), k, dim=-1
-        )
+        topk_weights, topk_ids = torch.topk(torch.softmax(gating, dim=-1), k, dim=-1)
         topk_weights = topk_weights / topk_weights.sum(dim=-1, keepdim=True)
         return topk_weights, topk_ids
     topk_weights = torch.rand(t, k, dtype=torch.float32, device=device)
@@ -150,8 +148,7 @@ def _marlin_quantize_per_expert(w_fp, marlin_quantize, quant_type):
 
 def grid():
     return [
-        {"num_tokens": t, "num_experts": e, "hidden": h,
-         "intermediate": i, "topk": k}
+        {"num_tokens": t, "num_experts": e, "hidden": h, "intermediate": i, "topk": k}
         for (t, e, h, i, k) in _SHAPES
     ]
 
@@ -177,9 +174,16 @@ def build_inputs(binding, dtype, device):
         w2_s = torch.randn(e, h, i // _GROUP_SIZE, dtype=dtype, device=device)
         quant_type_id = 0
         kwargs = dict(
-            hidden_states=hidden_states, w1=w1_q, w2=w2_q, bias1=None, bias2=None,
-            w1_scale=w1_s, w2_scale=w2_s, topk_weights=topk_weights,
-            topk_ids=topk_ids, quant_type_id=quant_type_id,
+            hidden_states=hidden_states,
+            w1=w1_q,
+            w2=w2_q,
+            bias1=None,
+            bias2=None,
+            w1_scale=w1_s,
+            w2_scale=w2_s,
+            topk_weights=topk_weights,
+            topk_ids=topk_ids,
+            quant_type_id=quant_type_id,
         )
         return (), kwargs
 
@@ -190,17 +194,26 @@ def build_inputs(binding, dtype, device):
     w2_q, w2_s = _marlin_quantize_per_expert(w2_fp, marlin_quantize, quant_type)
 
     kwargs = dict(
-        hidden_states=hidden_states, w1=w1_q, w2=w2_q, bias1=None, bias2=None,
-        w1_scale=w1_s, w2_scale=w2_s, topk_weights=topk_weights,
-        topk_ids=topk_ids, quant_type_id=quant_type.id,
+        hidden_states=hidden_states,
+        w1=w1_q,
+        w2=w2_q,
+        bias1=None,
+        bias2=None,
+        w1_scale=w1_s,
+        w2_scale=w2_s,
+        topk_weights=topk_weights,
+        topk_ids=topk_ids,
+        quant_type_id=quant_type.id,
     )
     return (), kwargs
 
 
 def key_shape(binding):
-    return (f"t{binding['num_tokens']}_e{binding['num_experts']}"
-            f"_h{binding['hidden']}_i{binding['intermediate']}"
-            f"_topk{binding['topk']}")
+    return (
+        f"t{binding['num_tokens']}_e{binding['num_experts']}"
+        f"_h{binding['hidden']}_i{binding['intermediate']}"
+        f"_topk{binding['topk']}"
+    )
 
 
 def config(binding, dtype):
@@ -210,8 +223,11 @@ def config(binding, dtype):
     i = binding["intermediate"]
     k = binding["topk"]
     return {
-        "quant": {"scheme": "W4A16", "weight_type": "uint4b8",
-                  "group_size": _GROUP_SIZE},
+        "quant": {
+            "scheme": "W4A16",
+            "weight_type": "uint4b8",
+            "group_size": _GROUP_SIZE,
+        },
         "inputs": {
             "hidden_states": {"shape": [t, h], "dtype": str(dtype)},
             "w1": {"shape": [e, i * 2, h], "note": "Marlin packed uint4b8"},
@@ -220,6 +236,11 @@ def config(binding, dtype):
             "topk_ids": {"shape": [t, k], "dtype": "int64"},
         },
         "outputs": {"output": {"shape": [t, h], "dtype": str(dtype)}},
-        "dims": {"num_tokens": t, "num_experts": e, "hidden": h,
-                 "intermediate": i, "topk": k},
+        "dims": {
+            "num_tokens": t,
+            "num_experts": e,
+            "hidden": h,
+            "intermediate": i,
+            "topk": k,
+        },
     }

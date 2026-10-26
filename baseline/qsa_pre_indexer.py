@@ -48,8 +48,8 @@ NUM_Q_HEADS = 64
 HEAD_DIM = 128
 NUM_KV_HEADS = 1
 COMPRESS_RATIO = 4
-STATE_SIZE = 64        # 循环状态缓存 page 大小（block_size 档）
-COMP_PAGE_SIZE = 64    # 压缩缓存 page 大小
+STATE_SIZE = 64  # 循环状态缓存 page 大小（block_size 档）
+COMP_PAGE_SIZE = 64  # 压缩缓存 page 大小
 EPS = 1e-6
 # (num_requests, seqlen_per_req, max_pages)
 _CASES = [
@@ -63,7 +63,8 @@ _CASES = [
 def native():
     try:
         mod = importlib.import_module(
-            "vllm.models.qwen4_exp.nvidia.ops.qsa_pre_indexer")
+            "vllm.models.qwen4_exp.nvidia.ops.qsa_pre_indexer"
+        )
     except ImportError:
         return None
     op = getattr(mod, "qsa_pre_indexer", None)
@@ -89,31 +90,57 @@ def build_inputs(binding, dtype, device):
     q_out = torch.empty(T, NUM_Q_HEADS, HEAD_DIM, dtype=dtype, device=device)
 
     state_blocks = r * max_pages
-    state_cache = torch.zeros(state_blocks, STATE_SIZE, NUM_KV_HEADS, HEAD_DIM,
-                              dtype=dtype, device=device)
+    state_cache = torch.zeros(
+        state_blocks, STATE_SIZE, NUM_KV_HEADS, HEAD_DIM, dtype=dtype, device=device
+    )
     comp_blocks = r * max_pages
-    compressed_cache = torch.zeros(comp_blocks, COMP_PAGE_SIZE, NUM_KV_HEADS, HEAD_DIM,
-                                   dtype=dtype, device=device)
+    compressed_cache = torch.zeros(
+        comp_blocks, COMP_PAGE_SIZE, NUM_KV_HEADS, HEAD_DIM, dtype=dtype, device=device
+    )
     state_slots = torch.arange(T, dtype=torch.int32, device=device)
-    compressed_slots = (torch.arange(T, dtype=torch.int32, device=device)
-                        // COMPRESS_RATIO)
+    compressed_slots = (
+        torch.arange(T, dtype=torch.int32, device=device) // COMPRESS_RATIO
+    )
     state_block_table = torch.zeros(r, max_pages, dtype=torch.int32, device=device)
     query_start_loc = torch.arange(0, T + 1, seqlen, dtype=torch.int32, device=device)
     logical_positions = torch.arange(T, dtype=torch.int64, device=device) % seqlen
     # k_work_metadata: [num_k_work, 2]（每工作块 [start, end)）；占位 1 个空工作块
     k_work_metadata = torch.zeros(1, 2, dtype=torch.int32, device=device)
 
-    args = (q, k, positions, cos_sin_cache, q_norm_weight, k_norm_weight, EPS,
-            q_out, state_cache, state_slots, state_block_table, query_start_loc,
-            logical_positions, compressed_cache, compressed_slots, k_work_metadata)
-    kwargs = {"compress_ratio": COMPRESS_RATIO,
-              "mrope_section": None, "rope_pos_offset": None}
+    args = (
+        q,
+        k,
+        positions,
+        cos_sin_cache,
+        q_norm_weight,
+        k_norm_weight,
+        EPS,
+        q_out,
+        state_cache,
+        state_slots,
+        state_block_table,
+        query_start_loc,
+        logical_positions,
+        compressed_cache,
+        compressed_slots,
+        k_work_metadata,
+    )
+    kwargs = {
+        "compress_ratio": COMPRESS_RATIO,
+        "mrope_section": None,
+        "rope_pos_offset": None,
+    }
     return args, kwargs
 
 
 def key_shape(binding):
-    return [binding["num_requests"], binding["seqlen"],
-            binding["max_pages"], NUM_Q_HEADS, HEAD_DIM]
+    return [
+        binding["num_requests"],
+        binding["seqlen"],
+        binding["max_pages"],
+        NUM_Q_HEADS,
+        HEAD_DIM,
+    ]
 
 
 def config(binding, dtype):
@@ -128,14 +155,23 @@ def config(binding, dtype):
             "k": {"shape": [T, HEAD_DIM], "dtype": dt},
             "positions": {"shape": [T], "dtype": "torch.int64"},
             "cos_sin_cache": {"shape": [seqlen + 1, HEAD_DIM // 2], "dtype": dt},
-            "state_cache": {"shape": [r * max_pages, STATE_SIZE, NUM_KV_HEADS, HEAD_DIM],
-                            "dtype": dt},
-            "compressed_cache": {"shape": [r * max_pages, COMP_PAGE_SIZE,
-                                           NUM_KV_HEADS, HEAD_DIM], "dtype": dt},
+            "state_cache": {
+                "shape": [r * max_pages, STATE_SIZE, NUM_KV_HEADS, HEAD_DIM],
+                "dtype": dt,
+            },
+            "compressed_cache": {
+                "shape": [r * max_pages, COMP_PAGE_SIZE, NUM_KV_HEADS, HEAD_DIM],
+                "dtype": dt,
+            },
         },
         "outputs": {"q_out": {"shape": [T, NUM_Q_HEADS, HEAD_DIM], "dtype": dt}},
-        "dims": {"num_requests": r, "seqlen": seqlen, "max_pages": max_pages,
-                 "q_heads": NUM_Q_HEADS, "head_dim": HEAD_DIM,
-                 "compress_ratio": COMPRESS_RATIO,
-                 "shape_source": "vllm 源码推断（无 benchmark）"},
+        "dims": {
+            "num_requests": r,
+            "seqlen": seqlen,
+            "max_pages": max_pages,
+            "q_heads": NUM_Q_HEADS,
+            "head_dim": HEAD_DIM,
+            "compress_ratio": COMPRESS_RATIO,
+            "shape_source": "vllm 源码推断（无 benchmark）",
+        },
     }

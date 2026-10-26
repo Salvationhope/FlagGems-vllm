@@ -65,8 +65,9 @@ def native():
 
 def grid():
     dims = list(_GRID)
-    return [dict(zip(dims, combo))
-            for combo in itertools.product(*(_GRID[d] for d in dims))]
+    return [
+        dict(zip(dims, combo)) for combo in itertools.product(*(_GRID[d] for d in dims))
+    ]
 
 
 def build_inputs(binding, dtype, device):
@@ -112,6 +113,11 @@ def config(binding, dtype):
             "topk_weights": {"shape": [T, _TOPK], "dtype": "torch.float32"},
             "topk_ids": {"shape": [T, _TOPK], "dtype": "torch.int32"},
         },
-        "dims": {"T": T, "E": E, "n_group": _N_GROUP,
-                 "topk_group": _TOPK_GROUP, "topk": _TOPK},
+        "dims": {
+            "T": T,
+            "E": E,
+            "n_group": _N_GROUP,
+            "topk_group": _TOPK_GROUP,
+            "topk": _TOPK,
+        },
     }

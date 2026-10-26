@@ -81,10 +81,7 @@ def native():
 
 
 def grid():
-    return [
-        {"num_tokens": t, "hidden_size": h, "top_k": k}
-        for (t, h, k) in _SHAPES
-    ]
+    return [{"num_tokens": t, "hidden_size": h, "top_k": k} for (t, h, k) in _SHAPES]
 
 
 def build_inputs(binding, dtype, device):
@@ -132,12 +129,17 @@ def config(binding, dtype):
             "topk_weights": {"shape": [t, k], "dtype": "torch.float32"},
             "topk_ids": {"shape": [t, k], "dtype": "torch.int32"},
             "x_fp8": {"shape": [t, h], "dtype": fp8, "note": "原地写（量化输出）"},
-            "x_sf": {"shape": [t, sf_k], "dtype": "torch.int32",
-                     "note": "原地写（packed UE8M0 scale）"},
-            "topk_idx_out": {"shape": [t, k], "dtype": "torch.int64",
-                             "note": "原地写"},
-            "topk_weights_out": {"shape": [t, k], "dtype": "torch.float32",
-                                 "note": "原地写"},
+            "x_sf": {
+                "shape": [t, sf_k],
+                "dtype": "torch.int32",
+                "note": "原地写（packed UE8M0 scale）",
+            },
+            "topk_idx_out": {"shape": [t, k], "dtype": "torch.int64", "note": "原地写"},
+            "topk_weights_out": {
+                "shape": [t, k],
+                "dtype": "torch.float32",
+                "note": "原地写",
+            },
         },
         "outputs": {
             "x_fp8": {"shape": [t, h], "dtype": fp8},
@@ -145,7 +147,6 @@ def config(binding, dtype):
             "topk_idx_out": {"shape": [t, k], "dtype": "torch.int64"},
             "topk_weights_out": {"shape": [t, k], "dtype": "torch.float32"},
         },
-        "dims": {"num_tokens": t, "hidden_size": h, "top_k": k,
-                 "block_k": _BLOCK_K},
+        "dims": {"num_tokens": t, "hidden_size": h, "top_k": k, "block_k": _BLOCK_K},
         "note": "shape 为 vllm 源码推断，非 FlagGems-vllm 基准",
     }

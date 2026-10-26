@@ -108,11 +108,22 @@ def build_inputs(binding, dtype, device):
     cos_sin_cache = torch.randn(max_pos, _ROPE_DIM, dtype=torch.float32, device=device)
     nb = _num_blocks(t)
     slot_mapping = torch.arange(t, dtype=torch.int64, device=device)
-    k_cache = torch.zeros(nb, _BLOCK_SIZE * _HEAD_BYTES, dtype=torch.uint8, device=device)
+    k_cache = torch.zeros(
+        nb, _BLOCK_SIZE * _HEAD_BYTES, dtype=torch.uint8, device=device
+    )
     # 当前源码 9 参签名：q_head_padded 置 num_heads（benchmark q 未做 head padding）
     q_head_padded = h
-    return (q, kv, k_cache, slot_mapping, positions, cos_sin_cache,
-            q_head_padded, _EPS, _BLOCK_SIZE), {}
+    return (
+        q,
+        kv,
+        k_cache,
+        slot_mapping,
+        positions,
+        cos_sin_cache,
+        q_head_padded,
+        _EPS,
+        _BLOCK_SIZE,
+    ), {}
 
 
 def key_shape(binding):
@@ -127,23 +138,43 @@ def config(binding, dtype):
         "inputs": {
             "q_in": {"shape": [t, h, _HEAD_DIM], "dtype": repr(dtype)},
             "kv": {"shape": [t, _HEAD_DIM], "dtype": repr(dtype)},
-            "k_cache": {"shape": [nb, _BLOCK_SIZE * _HEAD_BYTES], "dtype": "torch.uint8",
-                        "note": "fp8_ds_mla UE8M0 paged 布局，原地写"},
+            "k_cache": {
+                "shape": [nb, _BLOCK_SIZE * _HEAD_BYTES],
+                "dtype": "torch.uint8",
+                "note": "fp8_ds_mla UE8M0 paged 布局，原地写",
+            },
             "slot_mapping": {"shape": [t], "dtype": "torch.int64"},
             "position_ids": {"shape": [t], "dtype": "torch.int64"},
-            "cos_sin_cache": {"shape": [max_pos, _ROPE_DIM], "dtype": "torch.float32",
-                              "note": "randn 占位（真实为 cos/sin 拼接）"},
-            "q_head_padded": {"scalar": h,
-                              "note": "当前源码 9 参签名新增；benchmark 旧签名无此参"},
+            "cos_sin_cache": {
+                "shape": [max_pos, _ROPE_DIM],
+                "dtype": "torch.float32",
+                "note": "randn 占位（真实为 cos/sin 拼接）",
+            },
+            "q_head_padded": {
+                "scalar": h,
+                "note": "当前源码 9 参签名新增；benchmark 旧签名无此参",
+            },
             "eps": {"scalar": _EPS},
             "cache_block_size": {"scalar": _BLOCK_SIZE},
         },
         "outputs": {
-            "q_out": {"shape": [t, h, _HEAD_DIM], "dtype": repr(dtype),
-                      "note": "返回 padded 后的 q"},
-            "k_cache": {"shape": [nb, _BLOCK_SIZE * _HEAD_BYTES], "dtype": "torch.uint8"},
+            "q_out": {
+                "shape": [t, h, _HEAD_DIM],
+                "dtype": repr(dtype),
+                "note": "返回 padded 后的 q",
+            },
+            "k_cache": {
+                "shape": [nb, _BLOCK_SIZE * _HEAD_BYTES],
+                "dtype": "torch.uint8",
+            },
         },
-        "dims": {"num_tokens": t, "num_heads": h, "head_dim": _HEAD_DIM,
-                 "rope_dim": _ROPE_DIM, "head_bytes": _HEAD_BYTES,
-                 "block_size": _BLOCK_SIZE, "num_blocks": nb},
+        "dims": {
+            "num_tokens": t,
+            "num_heads": h,
+            "head_dim": _HEAD_DIM,
+            "rope_dim": _ROPE_DIM,
+            "head_bytes": _HEAD_BYTES,
+            "block_size": _BLOCK_SIZE,
+            "num_blocks": nb,
+        },
     }

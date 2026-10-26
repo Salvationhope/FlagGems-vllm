@@ -59,8 +59,7 @@ _CASES = [
 
 def native():
     try:
-        mod = importlib.import_module(
-            "vllm.models.qwen4_exp.nvidia.ops.qsa_indexer")
+        mod = importlib.import_module("vllm.models.qwen4_exp.nvidia.ops.qsa_indexer")
     except ImportError:
         return None
     op = getattr(mod, "qsa_select_paged_decode", None)
@@ -82,24 +81,43 @@ def build_inputs(binding, dtype, device):
 
     q = torch.randn(num_rows, NUM_HEADS, HEAD_DIM, dtype=dtype, device=device)
     blocks = r * max_pages
-    k_cache = torch.randn(blocks, PAGE_SIZE, NUM_KV_HEADS, HEAD_DIM,
-                          dtype=dtype, device=device)
+    k_cache = torch.randn(
+        blocks, PAGE_SIZE, NUM_KV_HEADS, HEAD_DIM, dtype=dtype, device=device
+    )
     page_table = torch.zeros(r, max_pages, dtype=torch.int32, device=device)
     # visible_blocks：每 query 可见压缩块数（不超过 page_table 覆盖列数/压缩比）
     max_visible = max_pages * PAGE_SIZE // COMPRESS_RATIO
-    visible_blocks = torch.full((num_rows,), min(max_visible, TOKEN_TOPK // COMPRESS_RATIO),
-                                dtype=torch.int32, device=device)
-    block_indices = torch.empty(num_rows, TOKEN_TOPK // COMPRESS_RATIO,
-                                dtype=torch.int32, device=device)
+    visible_blocks = torch.full(
+        (num_rows,),
+        min(max_visible, TOKEN_TOPK // COMPRESS_RATIO),
+        dtype=torch.int32,
+        device=device,
+    )
+    block_indices = torch.empty(
+        num_rows, TOKEN_TOPK // COMPRESS_RATIO, dtype=torch.int32, device=device
+    )
 
-    args = (q, k_cache, page_table, visible_blocks,
-            TOKEN_TOPK, COMPRESS_RATIO, dq, block_indices)
+    args = (
+        q,
+        k_cache,
+        page_table,
+        visible_blocks,
+        TOKEN_TOPK,
+        COMPRESS_RATIO,
+        dq,
+        block_indices,
+    )
     return args, {}
 
 
 def key_shape(binding):
-    return [binding["num_requests"], binding["decode_query_len"],
-            binding["max_pages"], NUM_HEADS, HEAD_DIM]
+    return [
+        binding["num_requests"],
+        binding["decode_query_len"],
+        binding["max_pages"],
+        NUM_HEADS,
+        HEAD_DIM,
+    ]
 
 
 def config(binding, dtype):
@@ -111,15 +129,28 @@ def config(binding, dtype):
     return {
         "inputs": {
             "q": {"shape": [num_rows, NUM_HEADS, HEAD_DIM], "dtype": dt},
-            "k_cache": {"shape": [r * max_pages, PAGE_SIZE, NUM_KV_HEADS, HEAD_DIM],
-                        "dtype": dt},
+            "k_cache": {
+                "shape": [r * max_pages, PAGE_SIZE, NUM_KV_HEADS, HEAD_DIM],
+                "dtype": dt,
+            },
             "page_table": {"shape": [r, max_pages], "dtype": "torch.int32"},
             "visible_blocks": {"shape": [num_rows], "dtype": "torch.int32"},
         },
-        "outputs": {"block_indices": {"shape": [num_rows, TOKEN_TOPK // COMPRESS_RATIO],
-                                      "dtype": "torch.int32"}},
-        "dims": {"num_requests": r, "decode_query_len": dq, "max_pages": max_pages,
-                 "heads": NUM_HEADS, "head_dim": HEAD_DIM, "page_size": PAGE_SIZE,
-                 "token_topk": TOKEN_TOPK, "compress_ratio": COMPRESS_RATIO,
-                 "shape_source": "vllm 源码推断（无 benchmark）"},
+        "outputs": {
+            "block_indices": {
+                "shape": [num_rows, TOKEN_TOPK // COMPRESS_RATIO],
+                "dtype": "torch.int32",
+            }
+        },
+        "dims": {
+            "num_requests": r,
+            "decode_query_len": dq,
+            "max_pages": max_pages,
+            "heads": NUM_HEADS,
+            "head_dim": HEAD_DIM,
+            "page_size": PAGE_SIZE,
+            "token_topk": TOKEN_TOPK,
+            "compress_ratio": COMPRESS_RATIO,
+            "shape_source": "vllm 源码推断（无 benchmark）",
+        },
     }

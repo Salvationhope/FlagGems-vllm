@@ -131,6 +131,5 @@ def config(binding, dtype):
             "x_q": {"shape": [T, d], "dtype": "torch.float8_e4m3fn"},
             "x_s": {"shape": [T, d // g], "dtype": "torch.float32"},
         },
-        "dims": {"num_tokens": T, "d": d, "group_size": g,
-                 "num_groups": d // g},
+        "dims": {"num_tokens": T, "d": d, "group_size": g, "num_groups": d // g},
     }

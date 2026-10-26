@@ -65,13 +65,20 @@ _EPS = 1e-6
 
 # 源码推断网格（非 benchmark）：(num_tokens, num_heads)
 _SHAPES = [
-    (1, 64), (1, 128),
-    (4, 64), (4, 128),
-    (17, 64), (17, 128),
-    (64, 64), (64, 128),
-    (1024, 64), (1024, 128),
-    (2048, 64), (2048, 128),
-    (8192, 64), (8192, 128),
+    (1, 64),
+    (1, 128),
+    (4, 64),
+    (4, 128),
+    (17, 64),
+    (17, 128),
+    (64, 64),
+    (64, 128),
+    (1024, 64),
+    (1024, 128),
+    (2048, 64),
+    (2048, 128),
+    (8192, 64),
+    (8192, 128),
 ]
 
 
@@ -107,8 +114,16 @@ def build_inputs(binding, dtype, device):
     slot_mapping = torch.arange(t, dtype=torch.int64, device=device)
     # bf16 plain-row cache：[num_blocks, block_size, head_dim]
     k_cache = torch.zeros(nb, _BLOCK_SIZE, _HEAD_DIM, dtype=dtype, device=device)
-    return (q, kv, k_cache, slot_mapping, positions, cos_sin_cache,
-            _EPS, _BLOCK_SIZE), {}
+    return (
+        q,
+        kv,
+        k_cache,
+        slot_mapping,
+        positions,
+        cos_sin_cache,
+        _EPS,
+        _BLOCK_SIZE,
+    ), {}
 
 
 def key_shape(binding):
@@ -121,23 +136,37 @@ def config(binding, dtype):
     nb = _num_blocks(t)
     return {
         "inputs": {
-            "q": {"shape": [t, h, _HEAD_DIM], "dtype": repr(dtype),
-                  "note": "bf16 原地重写"},
+            "q": {
+                "shape": [t, h, _HEAD_DIM],
+                "dtype": repr(dtype),
+                "note": "bf16 原地重写",
+            },
             "kv": {"shape": [t, _HEAD_DIM], "dtype": repr(dtype)},
-            "k_cache": {"shape": [nb, _BLOCK_SIZE, _HEAD_DIM], "dtype": repr(dtype),
-                        "note": "连续 bf16 paged cache，原地写"},
+            "k_cache": {
+                "shape": [nb, _BLOCK_SIZE, _HEAD_DIM],
+                "dtype": repr(dtype),
+                "note": "连续 bf16 paged cache，原地写",
+            },
             "slot_mapping": {"shape": [t], "dtype": "torch.int64"},
             "position_ids": {"shape": [t], "dtype": "torch.int64"},
-            "cos_sin_cache": {"shape": [max_pos, _ROPE_DIM], "dtype": "torch.float32",
-                              "note": "randn 占位（真实为 cos/sin 拼接）"},
+            "cos_sin_cache": {
+                "shape": [max_pos, _ROPE_DIM],
+                "dtype": "torch.float32",
+                "note": "randn 占位（真实为 cos/sin 拼接）",
+            },
             "eps": {"scalar": _EPS},
             "cache_block_size": {"scalar": _BLOCK_SIZE},
         },
         "outputs": {
-            "q": {"shape": [t, h, _HEAD_DIM], "dtype": repr(dtype),
-                  "note": "原地重写"},
+            "q": {"shape": [t, h, _HEAD_DIM], "dtype": repr(dtype), "note": "原地重写"},
             "k_cache": {"shape": [nb, _BLOCK_SIZE, _HEAD_DIM], "dtype": repr(dtype)},
         },
-        "dims": {"num_tokens": t, "num_heads": h, "head_dim": _HEAD_DIM,
-                 "rope_dim": _ROPE_DIM, "block_size": _BLOCK_SIZE, "num_blocks": nb},
+        "dims": {
+            "num_tokens": t,
+            "num_heads": h,
+            "head_dim": _HEAD_DIM,
+            "rope_dim": _ROPE_DIM,
+            "block_size": _BLOCK_SIZE,
+            "num_blocks": nb,
+        },
     }

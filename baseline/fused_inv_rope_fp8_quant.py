@@ -62,8 +62,10 @@ _QUANT_GROUP_SIZE = 128
 _CANDIDATES = [
     ("vllm.v1.attention.ops.deepseek_v4_ops", "fused_inv_rope_fp8_quant"),
     ("vllm.models.deepseek_v4.common.ops", "fused_inv_rope_fp8_quant"),
-    ("vllm.models.deepseek_v4.common.ops.fused_inv_rope_fp8_quant",
-     "fused_inv_rope_fp8_quant"),
+    (
+        "vllm.models.deepseek_v4.common.ops.fused_inv_rope_fp8_quant",
+        "fused_inv_rope_fp8_quant",
+    ),
 ]
 
 # benchmark DEFAULT_SHAPES：(num_tokens, num_heads, n_groups, tma_aligned_scales)
@@ -120,13 +122,13 @@ def build_inputs(binding, dtype, device):
     # torch.int64 == torch.long；用 int64 兼容离线冒烟 stub。
     positions = torch.randint(0, max_pos, (nt,), dtype=torch.int64, device=device)
     try:
-        cos_sin_cache = _make_cos_sin_cache(max_pos, _ROPE_DIM,
-                                            torch.device(device))
+        cos_sin_cache = _make_cos_sin_cache(max_pos, _ROPE_DIM, torch.device(device))
     except (AttributeError, TypeError):
         # 离线冒烟 stub 缺 outer/cos/cat 等；回落到 shape 正确的占位张量，
         # 真卡上走上面的真实构造（cos||sin，fp32）。
-        cos_sin_cache = torch.empty((max_pos, _ROPE_DIM), dtype=torch.float32,
-                                    device=device)
+        cos_sin_cache = torch.empty(
+            (max_pos, _ROPE_DIM), dtype=torch.float32, device=device
+        )
     args = (o, positions, cos_sin_cache, ng, heads_per_group)
     kwargs = {
         "nope_dim": _NOPE_DIM,
@@ -159,8 +161,7 @@ def config(binding, dtype):
         "inputs": {
             "o": {"shape": [nt, nh, _HEAD_DIM], "dtype": dt, "fill": "randn"},
             "positions": {"shape": [nt], "dtype": "torch.int64"},
-            "cos_sin_cache": {"shape": [max_pos, _ROPE_DIM],
-                              "dtype": "torch.float32"},
+            "cos_sin_cache": {"shape": [max_pos, _ROPE_DIM], "dtype": "torch.float32"},
             "n_groups": {"scalar": ng},
             "heads_per_group": {"scalar": heads_per_group},
             "nope_dim": {"scalar": _NOPE_DIM},
@@ -169,10 +170,15 @@ def config(binding, dtype):
             "tma_aligned_scales": {"scalar": tma},
         },
         "outputs": {
-            "o_fp8": {"shape": [nt, ng, d], "dtype": "torch.float8_e4m3fn",
-                      "note": "源码返回 transpose(0,1) 视图"},
-            "o_scale": {"dtype": "torch.int32" if tma else "torch.float32",
-                        "note": "预变换 scale，形状随 tma_aligned 分支"},
+            "o_fp8": {
+                "shape": [nt, ng, d],
+                "dtype": "torch.float8_e4m3fn",
+                "note": "源码返回 transpose(0,1) 视图",
+            },
+            "o_scale": {
+                "dtype": "torch.int32" if tma else "torch.float32",
+                "note": "预变换 scale，形状随 tma_aligned 分支",
+            },
         },
         "dims": {
             "num_tokens": nt,

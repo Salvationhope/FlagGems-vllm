@@ -66,8 +66,13 @@ def native():
 
 def grid():
     return [
-        {"num_tokens": t, "num_heads": h, "head_size": d,
-         "block_size": b, "num_blocks": n}
+        {
+            "num_tokens": t,
+            "num_heads": h,
+            "head_size": d,
+            "block_size": b,
+            "num_blocks": n,
+        }
         for (t, h, d, b, n) in _SHAPES
     ]
 
@@ -88,7 +93,7 @@ def build_inputs(binding, dtype, device):
     key = torch.randn(t, h, d, dtype=dtype, device=device)
     value = torch.randn(t, h, d, dtype=dtype, device=device)
 
-    scale = d ** -0.5
+    scale = d**-0.5
     key_value_cache = torch.empty(n, 2, b, h, d, dtype=dtype, device=device)
     key_value_cache.uniform_(-scale, scale)
     key_cache = key_value_cache[:, 0].contiguous()
@@ -97,14 +102,27 @@ def build_inputs(binding, dtype, device):
     k_scale = (key.amax() / 64.0).to(torch.float32)
     v_scale = (value.amax() / 64.0).to(torch.float32)
 
-    args = (key, value, key_cache, value_cache, slot_mapping,
-            _KV_CACHE_DTYPE, k_scale, v_scale)
+    args = (
+        key,
+        value,
+        key_cache,
+        value_cache,
+        slot_mapping,
+        _KV_CACHE_DTYPE,
+        k_scale,
+        v_scale,
+    )
     return args, {}
 
 
 def key_shape(binding):
-    return [binding["num_tokens"], binding["num_heads"], binding["head_size"],
-            binding["block_size"], binding["num_blocks"]]
+    return [
+        binding["num_tokens"],
+        binding["num_heads"],
+        binding["head_size"],
+        binding["block_size"],
+        binding["num_blocks"],
+    ]
 
 
 def config(binding, dtype):
@@ -129,6 +147,11 @@ def config(binding, dtype):
             "key_cache": {"shape": [n, b, h, d], "dtype": dt},
             "value_cache": {"shape": [n, b, h, d], "dtype": dt},
         },
-        "dims": {"num_tokens": t, "num_heads": h, "head_size": d,
-                 "block_size": b, "num_blocks": n},
+        "dims": {
+            "num_tokens": t,
+            "num_heads": h,
+            "head_size": d,
+            "block_size": b,
+            "num_blocks": n,
+        },
     }
