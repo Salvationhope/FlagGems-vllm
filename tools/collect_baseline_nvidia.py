@@ -495,7 +495,7 @@ def _collect_one_op_ops(op_module, report_dir,
             dtype_str = str(dtype)
             args, kwargs = op_module.build_inputs(binding, dtype, "cuda")
             latency_ms = triton.testing.do_bench(
-                lambda: op(*args, **kwargs), warmup=25, rep=100)
+                lambda a=args, k=kwargs: op(*a, **k), warmup=25, rep=100)
             # The NCU subprocess allocates its own inputs; free ours first so a
             # large-E MoE does not OOM from holding two copies at once.
             del args, kwargs
