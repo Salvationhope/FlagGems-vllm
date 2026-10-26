@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import argparse
-import importlib
 import csv
+import importlib
 import io
 import json
 import os
@@ -58,7 +58,11 @@ DURATION = "gpu__time_duration.sum"
 KERNEL_NAME_COL = "Kernel Name"
 # Byte-unit -> base-byte multiplier (ncu uses decimal: 1 Kbyte = 1000 byte).
 _BYTE_UNIT_MULT = {
-    "byte": 1.0, "Kbyte": 1e3, "Mbyte": 1e6, "Gbyte": 1e9, "Tbyte": 1e12,
+    "byte": 1.0,
+    "Kbyte": 1e3,
+    "Mbyte": 1e6,
+    "Gbyte": 1e9,
+    "Tbyte": 1e12,
 }
 
 # One Python module per operator exposing native()/grid()/build_inputs()/
@@ -77,10 +81,16 @@ _VECTOR_DTYPES = ("bf16", "fp16", "fp32", "int8", "fp64", "fp8")
 
 def _empty_result():
     return {
-        "F_cuda": 0.0, "F_tensor": 0.0, "B_mem": 0.0,
-        "U_cuda": 0.0, "U_tensor": 0.0, "U_mem": 0.0,
-        "U_bottle_neck": 0.0, "bottle_neck_unit": None,
-        "num_kernels": 0, "per_kernel": [],
+        "F_cuda": 0.0,
+        "F_tensor": 0.0,
+        "B_mem": 0.0,
+        "U_cuda": 0.0,
+        "U_tensor": 0.0,
+        "U_mem": 0.0,
+        "U_bottle_neck": 0.0,
+        "bottle_neck_unit": None,
+        "num_kernels": 0,
+        "per_kernel": [],
     }
 
 
@@ -134,8 +144,7 @@ def _parse_ncu_csv(csv_text, wanted):
     data_start = 1
     if len(rows) > 1 and name_idx is not None:
         unit_row = rows[1]
-        unit_name = (unit_row[name_idx].strip()
-                     if name_idx < len(unit_row) else "")
+        unit_name = unit_row[name_idx].strip() if name_idx < len(unit_row) else ""
         if not unit_name:
             for m, idx in col.items():
                 unit = unit_row[idx].strip() if idx < len(unit_row) else ""
@@ -189,21 +198,22 @@ def _build_per_kernel(agg, tensor_metric):
     per_kernel = []
     for i in range(n):
         f_cuda = sum(w * cuda_cols[m][i] for m, w in FLOP_CUDA_CORE.items())
-        per_kernel.append({
-            "name": names[i],
-            "F_cuda": f_cuda,
-            "F_tensor": tensor_col[i],
-            "B_mem": mem_col[i],
-            "U_cuda": ucuda_col[i],      # already % of peak (0-100)
-            "U_tensor": utensor_col[i],
-            "U_mem": umem_col[i],
-            "dur_frac": (dur[i] / dur_sum) if dur_sum else 0.0,
-        })
+        per_kernel.append(
+            {
+                "name": names[i],
+                "F_cuda": f_cuda,
+                "F_tensor": tensor_col[i],
+                "B_mem": mem_col[i],
+                "U_cuda": ucuda_col[i],  # already % of peak (0-100)
+                "U_tensor": utensor_col[i],
+                "U_mem": umem_col[i],
+                "dur_frac": (dur[i] / dur_sum) if dur_sum else 0.0,
+            }
+        )
     return per_kernel
 
 
-def profile_with_ncu(op_name, profile_script, shape, dtype_str,
-                     report_dir=None):
+def profile_with_ncu(op_name, profile_script, shape, dtype_str, report_dir=None):
     tensor_metric = FLOP_TENSOR_CORE.get(dtype_str)
     metrics = list(FLOP_CUDA_CORE) + [MEMORY_BYTES, *UTIL.values(), DURATION]
     if tensor_metric:
@@ -223,14 +233,22 @@ def profile_with_ncu(op_name, profile_script, shape, dtype_str,
 
     try:
         export_cmd = [
-            "ncu", "--metrics", ",".join(metrics),
-            "--nvtx", "--nvtx-include", "kiro_target/",
-            "--force-overwrite", "--export", str(report_base),
-            sys.executable, script_path,
+            "ncu",
+            "--metrics",
+            ",".join(metrics),
+            "--nvtx",
+            "--nvtx-include",
+            "kiro_target/",
+            "--force-overwrite",
+            "--export",
+            str(report_base),
+            sys.executable,
+            script_path,
         ]
         try:
-            proc = run_with_cleanup(export_cmd, capture_output=True, text=True,
-                                  timeout=600)
+            proc = run_with_cleanup(
+                export_cmd, capture_output=True, text=True, timeout=600
+            )
         except FileNotFoundError:
             print("  ✗ ncu command not found, skipping NCU profiling")
             return _empty_result()
@@ -238,12 +256,17 @@ def profile_with_ncu(op_name, profile_script, shape, dtype_str,
             print(f"  ✗ NCU timed out: {shape} {dtype_str}")
             return _empty_result()
         if proc.returncode != 0:
-            print(f"  ✗ NCU profiling failed (code={proc.returncode}): "
-                  f"{_err_msg(proc)}")
+            print(
+                f"  ✗ NCU profiling failed (code={proc.returncode}): "
+                f"{_err_msg(proc)}"
+            )
             return _empty_result()
 
-        candidates = sorted(report_dir.glob(f"{tag}.ncu-rep*"),
-                            key=lambda p: p.stat().st_mtime, reverse=True)
+        candidates = sorted(
+            report_dir.glob(f"{tag}.ncu-rep*"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
         if not candidates:
             print(f"  ✗ NCU produced no report file: {report_base}.ncu-rep[z]")
             return _empty_result()
@@ -251,10 +274,12 @@ def profile_with_ncu(op_name, profile_script, shape, dtype_str,
 
         imp = run_with_cleanup(
             ["ncu", "--import", report_path, "--csv", "--page", "raw"],
-            capture_output=True, text=True, timeout=120)
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
         if imp.returncode != 0:
-            print(f"  ✗ NCU import failed (code={imp.returncode}): "
-                  f"{_err_msg(imp)}")
+            print(f"  ✗ NCU import failed (code={imp.returncode}): " f"{_err_msg(imp)}")
             return _empty_result()
 
         agg = _parse_ncu_csv(imp.stdout, metrics)
@@ -274,8 +299,7 @@ def profile_with_ncu(op_name, profile_script, shape, dtype_str,
         if util[bottleneck] == 0.0:  # all three zero (parse failure / metric mismatch)
             bottleneck = None
 
-        _unit = {"cuda_core": "cuda", "tensor_core": "tensor",
-                 "memory_bw": "mem"}
+        _unit = {"cuda_core": "cuda", "tensor_core": "tensor", "memory_bw": "mem"}
         U_cuda = util["cuda_core"] * 100.0
         U_tensor = util["tensor_core"] * 100.0
         U_mem = util["memory_bw"] * 100.0
@@ -330,40 +354,53 @@ def _factors_for_block(block, ref_block):
     if not block or not ref_block:
         return None
     out = {
-        "bandwidth_gbps": _ratio(block.get("bandwidth_gbps"),
-                                 ref_block.get("bandwidth_gbps")),
-        "tensor": {}, "vector": {},
+        "bandwidth_gbps": _ratio(
+            block.get("bandwidth_gbps"), ref_block.get("bandwidth_gbps")
+        ),
+        "tensor": {},
+        "vector": {},
     }
     for dt in _TENSOR_DTYPES:
-        out["tensor"][dt] = _ratio(block.get("tensor", {}).get(dt),
-                                   ref_block.get("tensor", {}).get(dt))
+        out["tensor"][dt] = _ratio(
+            block.get("tensor", {}).get(dt), ref_block.get("tensor", {}).get(dt)
+        )
     for dt in _VECTOR_DTYPES:
-        out["vector"][dt] = _ratio(block.get("vector", {}).get(dt),
-                                   ref_block.get("vector", {}).get(dt))
+        out["vector"][dt] = _ratio(
+            block.get("vector", {}).get(dt), ref_block.get("vector", {}).get(dt)
+        )
     return out
 
 
-def build_scaling_factors(specs_path=HARDWARE_SPECS_PATH,
-                          reference_chip=DEFAULT_REFERENCE_CHIP):
+def build_scaling_factors(
+    specs_path=HARDWARE_SPECS_PATH, reference_chip=DEFAULT_REFERENCE_CHIP
+):
     specs_path = Path(specs_path)
     if not specs_path.exists():
-        return {"_error": f"spec file not found: {specs_path}, scaling factors left empty",
-                "reference_chip": reference_chip, "chips": []}
+        return {
+            "_error": f"spec file not found: {specs_path}, scaling factors left empty",
+            "reference_chip": reference_chip,
+            "chips": [],
+        }
     specs = json.loads(specs_path.read_text(encoding="utf-8"))
     chips = specs.get("chips", [])
     ref = next((c for c in chips if c.get("chip") == reference_chip), None)
     if ref is None:
-        return {"_error": f"reference chip {reference_chip} not in spec file, scaling factors left empty",
-                "reference_chip": reference_chip, "chips": []}
+        return {
+            "_error": f"reference chip {reference_chip} not in spec file, scaling factors left empty",
+            "reference_chip": reference_chip,
+            "chips": [],
+        }
 
     entries = []
     for c in chips:
         # The reference chip is listed too (1.0 against itself, null where missing).
-        entries.append({
-            "vendor": c.get("vendor"),
-            "chip": c.get("chip"),
-            "measured": _factors_for_block(c.get("measured"), ref.get("measured")),
-        })
+        entries.append(
+            {
+                "vendor": c.get("vendor"),
+                "chip": c.get("chip"),
+                "measured": _factors_for_block(c.get("measured"), ref.get("measured")),
+            }
+        )
     return {
         "reference_chip": reference_chip,
         "source_specs": specs_path.name,
@@ -381,8 +418,11 @@ def _dumps(obj, indent=2, level=0):
     if isinstance(obj, dict):
         if not obj:
             return "{}"
-        items = [f"{pad2}{json.dumps(k, ensure_ascii=False)}: "
-                 f"{_dumps(v, indent, level + 1)}" for k, v in obj.items()]
+        items = [
+            f"{pad2}{json.dumps(k, ensure_ascii=False)}: "
+            f"{_dumps(v, indent, level + 1)}"
+            for k, v in obj.items()
+        ]
         return "{\n" + ",\n".join(items) + "\n" + pad + "}"
     if isinstance(obj, list):
         if not obj:
@@ -410,8 +450,15 @@ def _discover_ops(ops_dir=OPS_DIR):
     # Let `import <op>` find modules under ops_dir (subprocess scripts use it too).
     if str(ops_dir) not in sys.path:
         sys.path.insert(0, str(ops_dir))
-    required = ("OP_NAME", "DTYPES", "IS_INPLACE",
-                "native", "grid", "build_inputs", "key_shape")
+    required = (
+        "OP_NAME",
+        "DTYPES",
+        "IS_INPLACE",
+        "native",
+        "grid",
+        "build_inputs",
+        "key_shape",
+    )
     discovered = []
     for path in sorted(ops_dir.glob("*.py")):
         if path.stem == "__init__":
@@ -452,15 +499,16 @@ def _select_ops(discovered, only=None):
     if only:
         unknown = sorted(only - available)
         if unknown:
-            print(f"warning: --ops operators not found, ignored: "
-                  f"{', '.join(unknown)}")
+            print(
+                f"warning: --ops operators not found, ignored: " f"{', '.join(unknown)}"
+            )
 
-    return [(name, mod) for name, mod in discovered
-            if only is None or name in only]
+    return [(name, mod) for name, mod in discovered if only is None or name in only]
 
 
-def _collect_one_op_ops(op_module, report_dir,
-                        results=None, output_path=None, ops_dir=None):
+def _collect_one_op_ops(
+    op_module, report_dir, results=None, output_path=None, ops_dir=None
+):
     if ops_dir is None:
         ops_dir = OPS_DIR
     op_name = op_module.OP_NAME
@@ -475,12 +523,17 @@ def _collect_one_op_ops(op_module, report_dir,
 
     try:
         probe_args, probe_kwargs = op_module.build_inputs(
-            bindings[0], dtypes[0], "cuda")
+            bindings[0], dtypes[0], "cuda"
+        )
         op(*probe_args, **probe_kwargs)
         torch.cuda.synchronize()
-    except Exception as e:  # noqa: BLE001 - any failure means this host cannot collect it
-        print(f"\nskipping {op_name}: pre-check failed, cannot collect on this host"
-              f" ({type(e).__name__}: {str(e)[:120]})")
+    except (
+        Exception
+    ) as e:  # noqa: BLE001 - any failure means this host cannot collect it
+        print(
+            f"\nskipping {op_name}: pre-check failed, cannot collect on this host"
+            f" ({type(e).__name__}: {str(e)[:120]})"
+        )
         return None
 
     shapes = {}
@@ -495,15 +548,18 @@ def _collect_one_op_ops(op_module, report_dir,
             dtype_str = str(dtype)
             args, kwargs = op_module.build_inputs(binding, dtype, "cuda")
             latency_ms = triton.testing.do_bench(
-                lambda a=args, k=kwargs: op(*a, **k), warmup=25, rep=100)
+                lambda a=args, k=kwargs: op(*a, **k), warmup=25, rep=100
+            )
             # The NCU subprocess allocates its own inputs; free ours first so a
             # large-E MoE does not OOM from holding two copies at once.
             del args, kwargs
             torch.cuda.empty_cache()
             script = _build_profile_script_ops(
-                ops_dir, mod_name, binding, dtype_str, warmup=3)
-            ncu = profile_with_ncu(op_name, script, shape, dtype_str,
-                                   report_dir=report_dir)
+                ops_dir, mod_name, binding, dtype_str, warmup=3
+            )
+            ncu = profile_with_ncu(
+                op_name, script, shape, dtype_str, report_dir=report_dir
+            )
             # Optional config(binding, dtype) describing real input/output shapes.
             cfg = None
             if hasattr(op_module, "config"):
@@ -511,8 +567,7 @@ def _collect_one_op_ops(op_module, report_dir,
             per_dtype[dtype_str] = _finalize_record(latency_ms, ncu, config=cfg)
 
             bn = ncu["bottle_neck_unit"]
-            suffix = (f"  bottleneck={bn} ({ncu['U_bottle_neck']:.1f}%)"
-                      if bn else "")
+            suffix = f"  bottleneck={bn} ({ncu['U_bottle_neck']:.1f}%)" if bn else ""
             print(f"  {shape} {dtype_str}: {latency_ms:.4f} ms{suffix}")
 
         _flush_results(results, output_path)
@@ -523,8 +578,16 @@ def _collect_one_op_ops(op_module, report_dir,
 def _spawn_op_worker(op_name, report_dir, device, op_timeout):
     fd, tmp = tempfile.mkstemp(prefix=f"baseline_{op_name}_", suffix=".json")
     os.close(fd)
-    cmd = [sys.executable, __file__, "--ops", op_name,
-           "--output", tmp, "--report-dir", str(report_dir)]
+    cmd = [
+        sys.executable,
+        __file__,
+        "--ops",
+        op_name,
+        "--output",
+        tmp,
+        "--report-dir",
+        str(report_dir),
+    ]
     if device is not None:
         cmd += ["--device", str(device)]
     env = dict(os.environ, BASELINE_WORKER="1")
@@ -534,8 +597,10 @@ def _spawn_op_worker(op_name, report_dir, device, op_timeout):
         proc = run_with_cleanup(cmd, timeout=op_timeout, env=env)
         ok = proc.returncode == 0
         if not ok:
-            print(f"  ✗ {op_name} subprocess exited abnormally (code={proc.returncode}), "
-                  f"skipped; completed shapes (if any) kept")
+            print(
+                f"  ✗ {op_name} subprocess exited abnormally (code={proc.returncode}), "
+                f"skipped; completed shapes (if any) kept"
+            )
     except subprocess.TimeoutExpired:
         ok = False
         print(f"  ✗ {op_name} subprocess timed out (> {op_timeout}s), skipped")
@@ -569,9 +634,14 @@ def _describe_callable(op):
 def _check_one_op(op_module, device=None):
     op_name = op_module.OP_NAME
     mod_name = op_module.__name__
-    result = {"status": "skip", "op_name": op_name,
-              "call": f"ops.{mod_name}", "shape": None, "dtype": None,
-              "detail": ""}
+    result = {
+        "status": "skip",
+        "op_name": op_name,
+        "call": f"ops.{mod_name}",
+        "shape": None,
+        "dtype": None,
+        "detail": "",
+    }
 
     try:
         op = op_module.native()
@@ -580,7 +650,9 @@ def _check_one_op(op_module, device=None):
         result["detail"] = f"native() raised: {type(e).__name__}: {e}"
         return result
     if op is None:
-        result["detail"] = "native() returned None (intentionally skipped or unresolved)"
+        result["detail"] = (
+            "native() returned None (intentionally skipped or unresolved)"
+        )
         return result
 
     result["call"] = _describe_callable(op)
@@ -639,22 +711,30 @@ def check_ops(device=None, only=None):
         sig = r["call"]
         if r["shape"] is not None:
             sig += f"  {r['shape']} {r['dtype']}"
-        line = f"  {_mark[r['status']]} {r['op_name']}  →  {sig}  [{_word[r['status']]}]"
+        line = (
+            f"  {_mark[r['status']]} {r['op_name']}  →  {sig}  [{_word[r['status']]}]"
+        )
         if r["detail"]:
             line += f": {r['detail']}"
         print(line)
 
-    print(f"\nsummary: ok {counts['ok']} / fail {counts['fail']} / "
-          f"skip {counts['skip']}  ({len(ops_modules)} operators total)")
+    print(
+        f"\nsummary: ok {counts['ok']} / fail {counts['fail']} / "
+        f"skip {counts['skip']}  ({len(ops_modules)} operators total)"
+    )
     return counts["fail"]
 
 
-def collect_baseline(output_path,
-                     report_dir=None, device=None,
-                     only=None,
-                     worker=False, op_timeout=1800,
-                     reference_chip=DEFAULT_REFERENCE_CHIP,
-                     task_exit_status=False):
+def collect_baseline(
+    output_path,
+    report_dir=None,
+    device=None,
+    only=None,
+    worker=False,
+    op_timeout=1800,
+    reference_chip=DEFAULT_REFERENCE_CHIP,
+    task_exit_status=False,
+):
     if device is not None:
         os.environ["CUDA_VISIBLE_DEVICES"] = str(device)
     if not torch.cuda.is_available():
@@ -674,20 +754,28 @@ def collect_baseline(output_path,
 
     if worker:
         for op_name, op_module in ops_modules:
-            _collect_one_op_ops(op_module, report_dir,
-                                results=results, output_path=output_path,
-                                ops_dir=ops_dir)
+            _collect_one_op_ops(
+                op_module,
+                report_dir,
+                results=results,
+                output_path=output_path,
+                ops_dir=ops_dir,
+            )
         _flush_results(results, output_path)
         return
 
-    results["_environment"] = collect_environment(torch, {
-        "device": device,
-        "op_timeout_seconds": op_timeout,
-        "reference_chip": reference_chip,
-        "only": sorted(only) if only is not None else None,
-        "latency_warmup_ms": 25, "latency_rep_ms": 100,
-        "ncu_warmup_calls": 3,
-    })
+    results["_environment"] = collect_environment(
+        torch,
+        {
+            "device": device,
+            "op_timeout_seconds": op_timeout,
+            "reference_chip": reference_chip,
+            "only": sorted(only) if only is not None else None,
+            "latency_warmup_ms": 25,
+            "latency_rep_ms": 100,
+            "ncu_warmup_calls": 3,
+        },
+    )
     _flush_results(results, output_path)
 
     print(f"collect device: {device_name}  (operator dir={ops_dir})")
@@ -696,17 +784,20 @@ def collect_baseline(output_path,
     if sf.get("_error"):
         print(f"warning: {sf['_error']}")
     else:
-        print(f"scaling factors: reference chip {sf['reference_chip']}, "
-              f"covering {len(sf['chips'])} chips")
+        print(
+            f"scaling factors: reference chip {sf['reference_chip']}, "
+            f"covering {len(sf['chips'])} chips"
+        )
     if not ops_modules:
         print("warning: no operators to collect after filtering")
     else:
-        print(f"operators to collect ({len(ops_modules)}): "
-              f"{', '.join(name for name, _ in ops_modules)}")
+        print(
+            f"operators to collect ({len(ops_modules)}): "
+            f"{', '.join(name for name, _ in ops_modules)}"
+        )
     failed = []
     for op_name, _ in ops_modules:
-        entry, ok = _spawn_op_worker(op_name, report_dir,
-                                     device, op_timeout)
+        entry, ok = _spawn_op_worker(op_name, report_dir, device, op_timeout)
         if entry is not None:
             results[op_name] = entry
         if not ok:
@@ -717,42 +808,69 @@ def collect_baseline(output_path,
     n_ops = sum(1 for k in results if not k.startswith("_"))
     print(f"\n✓ baseline data written: {output_path}  ({n_ops} operators)")
     if failed:
-        print(f"⚠ {len(failed)} operator subprocess(es) failed (skipped, partial results kept): "
-              f"{', '.join(failed)}")
+        print(
+            f"⚠ {len(failed)} operator subprocess(es) failed (skipped, partial results kept): "
+            f"{', '.join(failed)}"
+        )
     if task_exit_status:
         return 1 if failed else 0
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Collect baseline data from NVIDIA native kernels")
-    parser.add_argument("--output", default="op_perf_baseline.json",
-                        help="output file path")
-    parser.add_argument("--report-dir", default=None,
-                        help="directory for NCU .ncu-rep reports (open with ncu-ui)")
-    parser.add_argument("--device", default=None,
-                        help="physical card(s) to collect on. A single card number "
-                             "(e.g. 0 or 3) runs single-card; comma-separated "
-                             "(e.g. 0,1,2,3) runs a multi-card dynamic queue, "
-                             "distributing operators across cards. Applied via "
-                             "CUDA_VISIBLE_DEVICES; default uses the default device")
-    parser.add_argument("--resume", action="store_true",
-                        help="resume a multi-card run, skipping completed operators "
-                             "(requires multiple card numbers in --device)")
-    parser.add_argument("--ops", default=None,
-                        help="only collect the given operators (comma-separated, e.g. "
-                             "moe_sum,grouped_topk), default is all")
-    parser.add_argument("--op-timeout", type=float, default=1800,
-                        help="per-operator subprocess timeout in seconds in "
-                             "orchestration mode (guards against CUDA hangs; default 1800)")
-    parser.add_argument("--reference-chip", default=DEFAULT_REFERENCE_CHIP,
-                        help=f"denominator (reference) chip for scaling factors, i.e. the "
-                             f"card baseline is collected on; must be a chip name in "
-                             f"hardware_specs.json (default {DEFAULT_REFERENCE_CHIP})")
-    parser.add_argument("--check", action="store_true",
-                        help="only check each operator's native interface can be called "
-                             "(one trial call on GPU with the first shape x first dtype); "
-                             "print how it is called and ok/fail, collect nothing and "
-                             "write no JSON. Works with --ops/--device")
+        description="Collect baseline data from NVIDIA native kernels"
+    )
+    parser.add_argument(
+        "--output", default="op_perf_baseline.json", help="output file path"
+    )
+    parser.add_argument(
+        "--report-dir",
+        default=None,
+        help="directory for NCU .ncu-rep reports (open with ncu-ui)",
+    )
+    parser.add_argument(
+        "--device",
+        default=None,
+        help="physical card(s) to collect on. A single card number "
+        "(e.g. 0 or 3) runs single-card; comma-separated "
+        "(e.g. 0,1,2,3) runs a multi-card dynamic queue, "
+        "distributing operators across cards. Applied via "
+        "CUDA_VISIBLE_DEVICES; default uses the default device",
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="resume a multi-card run, skipping completed operators "
+        "(requires multiple card numbers in --device)",
+    )
+    parser.add_argument(
+        "--ops",
+        default=None,
+        help="only collect the given operators (comma-separated, e.g. "
+        "moe_sum,grouped_topk), default is all",
+    )
+    parser.add_argument(
+        "--op-timeout",
+        type=float,
+        default=1800,
+        help="per-operator subprocess timeout in seconds in "
+        "orchestration mode (guards against CUDA hangs; default 1800)",
+    )
+    parser.add_argument(
+        "--reference-chip",
+        default=DEFAULT_REFERENCE_CHIP,
+        help=f"denominator (reference) chip for scaling factors, i.e. the "
+        f"card baseline is collected on; must be a chip name in "
+        f"hardware_specs.json (default {DEFAULT_REFERENCE_CHIP})",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="only check each operator's native interface can be called "
+        "(one trial call on GPU with the first shape x first dtype); "
+        "print how it is called and ok/fail, collect nothing and "
+        "write no JSON. Works with --ops/--device",
+    )
     args = parser.parse_args()
     worker = os.environ.get("BASELINE_WORKER") == "1"
     task_exit_status = os.environ.get("BASELINE_TASK_EXIT") == "1"
@@ -760,29 +878,35 @@ if __name__ == "__main__":
     multi_gpu = args.device is not None and "," in args.device
     if multi_gpu:
         if args.check or worker:
-            parser.error("multi-card collection (multiple card numbers in --device) "
-                         "cannot be combined with --check or worker mode")
+            parser.error(
+                "multi-card collection (multiple card numbers in --device) "
+                "cannot be combined with --check or worker mode"
+            )
         if args.op_timeout <= 0:
             parser.error("--op-timeout must be positive")
         args.devices = args.device
         from collect_baseline_multi_gpu import collect
+
         try:
             sys.exit(collect(args))
         except ValueError as exc:
             parser.error(str(exc))
     if args.resume:
-        parser.error("--resume requires multiple card numbers in --device (multi-card collection)")
+        parser.error(
+            "--resume requires multiple card numbers in --device (multi-card collection)"
+        )
     if args.check:
-        n_fail = check_ops(device=args.device,
-                           only=_parse_name_list(args.ops))
+        n_fail = check_ops(device=args.device, only=_parse_name_list(args.ops))
         sys.exit(1 if n_fail else 0)
-    exit_code = collect_baseline(args.output,
-                     report_dir=args.report_dir or "ncu_reports",
-                     device=args.device,
-                     only=_parse_name_list(args.ops),
-                     worker=worker,
-                     op_timeout=args.op_timeout,
-                     reference_chip=args.reference_chip,
-                     task_exit_status=task_exit_status)
+    exit_code = collect_baseline(
+        args.output,
+        report_dir=args.report_dir or "ncu_reports",
+        device=args.device,
+        only=_parse_name_list(args.ops),
+        worker=worker,
+        op_timeout=args.op_timeout,
+        reference_chip=args.reference_chip,
+        task_exit_status=task_exit_status,
+    )
 
     sys.exit(exit_code or 0)

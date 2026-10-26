@@ -4,18 +4,18 @@
 import ctypes
 import json
 import os
-from pathlib import Path
 import signal
 import subprocess
 import sys
+from pathlib import Path
 
 
 def _children(parents):
-    if sys.platform == 'linux':
+    if sys.platform == "linux":
         children = set()
         for pid in parents:
             try:
-                for path in Path(f'/proc/{pid}/task').glob('*/children'):
+                for path in Path(f"/proc/{pid}/task").glob("*/children"):
                     try:
                         children.update(map(int, path.read_text().split()))
                     except FileNotFoundError:
@@ -25,9 +25,15 @@ def _children(parents):
         return children
     # NVIDIA CUDA collection targets Linux. Other POSIX hosts retain the older
     # tree cleanup, but cannot recover descendants already reparented to PID 1.
-    table = subprocess.check_output(['/bin/ps', '-eo', 'pid=,ppid='], text=True, timeout=5)
-    return {int(pid) for line in table.splitlines() for pid, ppid in [line.split()]
-            if int(ppid) in parents}
+    table = subprocess.check_output(
+        ["/bin/ps", "-eo", "pid=,ppid="], text=True, timeout=5
+    )
+    return {
+        int(pid)
+        for line in table.splitlines()
+        for pid, ppid in [line.split()]
+        if int(ppid) in parents
+    }
 
 
 def _kill_tree(root):
@@ -89,13 +95,20 @@ def run_with_cleanup(command, *, timeout, capture_output=False, text=False, env=
     actual_command = command
     options = {}
     if env is not None:
-        options['env'] = env
-    if sys.platform == 'linux':
+        options["env"] = env
+    if sys.platform == "linux":
         read_fd, write_fd = os.pipe()
-        actual_command = [sys.executable, str(Path(__file__).resolve()), str(write_fd), *command]
-        options['pass_fds'] = (write_fd,)
+        actual_command = [
+            sys.executable,
+            str(Path(__file__).resolve()),
+            str(write_fd),
+            *command,
+        ]
+        options["pass_fds"] = (write_fd,)
     try:
-        with subprocess.Popen(actual_command, stdout=pipe, stderr=pipe, text=text, **options) as process:
+        with subprocess.Popen(
+            actual_command, stdout=pipe, stderr=pipe, text=text, **options
+        ) as process:
             if write_fd is not None:
                 os.close(write_fd)
                 write_fd = None
@@ -113,14 +126,16 @@ def run_with_cleanup(command, *, timeout, capture_output=False, text=False, env=
                 error = os.read(read_fd, 65536)
                 if error:
                     raise OSError(*json.loads(error))
-            return subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
+            return subprocess.CompletedProcess(
+                command, process.returncode, stdout, stderr
+            )
     finally:
         for fd in (read_fd, write_fd):
             if fd is not None:
                 os.close(fd)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     result = _supervise(int(sys.argv[1]), sys.argv[2:])
     if result < 0:
         # Preserve Popen's negative returncode for commands terminated by signal.

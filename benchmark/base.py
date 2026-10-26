@@ -527,10 +527,7 @@ class Benchmark:
                         )
                         metric.gbps = self.get_gbps(args, latency=metric.latency)
 
-                    if (
-                        "tflops" in self.to_bench_metrics
-                        and self.torch_op is not None
-                    ):
+                    if "tflops" in self.to_bench_metrics and self.torch_op is not None:
                         metric.tflops = (
                             self.get_tflops(self.torch_op, *args, **kwargs)
                             / metric.latency

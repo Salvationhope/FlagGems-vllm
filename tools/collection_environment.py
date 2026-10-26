@@ -1,18 +1,19 @@
 """Best-effort provenance for a baseline run; probes never require extra packages."""
 
-from importlib import metadata
 import importlib
 import json
 import os
 import platform
 import subprocess
 import uuid
+from importlib import metadata
 
 
 def _command(args, cwd=None):
     try:
-        result = subprocess.run(args, cwd=cwd, capture_output=True, text=True,
-                                timeout=5, check=True)
+        result = subprocess.run(
+            args, cwd=cwd, capture_output=True, text=True, timeout=5, check=True
+        )
         return result.stdout.strip()
     except (OSError, subprocess.SubprocessError):
         return None
@@ -41,14 +42,22 @@ def _driver_version(device_uuid):
             device_uuid = "GPU-" + str(uuid.UUID(device_uuid))
         except (ValueError, AttributeError):
             pass  # Preserve GPU-/MIG- identifiers verbatim.
-        value = _command(["nvidia-smi", "--id", device_uuid,
-                          "--query-gpu=driver_version", "--format=csv,noheader"])
+        value = _command(
+            [
+                "nvidia-smi",
+                "--id",
+                device_uuid,
+                "--query-gpu=driver_version",
+                "--format=csv,noheader",
+            ]
+        )
         if value:
             return value
     # Driver version is shared by the host's NVIDIA devices. Only use an
     # unambiguous result, also covering Torch without UUID support and MIG.
-    values = _command(["nvidia-smi", "--query-gpu=driver_version",
-                       "--format=csv,noheader"])
+    values = _command(
+        ["nvidia-smi", "--query-gpu=driver_version", "--format=csv,noheader"]
+    )
     versions = {v.strip() for v in (values or "").splitlines() if v.strip()}
     return next(iter(versions)) if len(versions) == 1 else None
 
@@ -57,10 +66,12 @@ def _cpu_info():
     fields = {}
     try:
         data = json.loads(_command(["env", "LC_ALL=C", "lscpu", "--json"]) or "{}")
+
         def visit(rows):
             for row in rows:
                 fields[row["field"].rstrip(":")] = row.get("data")
                 visit(row.get("children", []))
+
         visit(data.get("lscpu", []))
     except (ValueError, TypeError, KeyError, AttributeError):
         pass
@@ -95,18 +106,27 @@ def collect_environment(torch, run):
     Missing tools/optional dependencies are represented by null. Only explicitly
     selected environment variables are recorded, never the full process environment.
     """
-    gpu = {"name": None, "uuid": None, "total_memory_bytes": None,
-           "total_memory_gib": None,
-           "compute_capability": None, "multiprocessor_count": None,
-           "cuda_device_index": None, "driver_version": None}
+    gpu = {
+        "name": None,
+        "uuid": None,
+        "total_memory_bytes": None,
+        "total_memory_gib": None,
+        "compute_capability": None,
+        "multiprocessor_count": None,
+        "cuda_device_index": None,
+        "driver_version": None,
+    }
     try:
         index = torch.cuda.current_device()
         props = torch.cuda.get_device_properties(index)
-        gpu.update(name=props.name, total_memory_bytes=props.total_memory,
-                   total_memory_gib=round(props.total_memory / (1024 ** 3), 2),
-                   compute_capability=f"{props.major}.{props.minor}",
-                   multiprocessor_count=props.multi_processor_count,
-                   cuda_device_index=index)
+        gpu.update(
+            name=props.name,
+            total_memory_bytes=props.total_memory,
+            total_memory_gib=round(props.total_memory / (1024**3), 2),
+            compute_capability=f"{props.major}.{props.minor}",
+            multiprocessor_count=props.multi_processor_count,
+            cuda_device_index=index,
+        )
         uuid = getattr(props, "uuid", None)
         if uuid is not None:
             gpu["uuid"] = str(uuid)
@@ -118,15 +138,22 @@ def collect_environment(torch, run):
     return {
         "hardware": {"gpu": gpu, **_cpu_info()},
         "software": {
-            "os": platform.system(), "os_release": platform.release(),
-            "machine": platform.machine(), "python": platform.python_version(),
-            "packages": {name: _version(name) for name in
-                         ("torch", "triton", "vllm", "sglang")},
-            "torch_cuda_version": getattr(getattr(torch, "version", None), "cuda", None),
+            "os": platform.system(),
+            "os_release": platform.release(),
+            "machine": platform.machine(),
+            "python": platform.python_version(),
+            "packages": {
+                name: _version(name) for name in ("torch", "triton", "vllm", "sglang")
+            },
+            "torch_cuda_version": getattr(
+                getattr(torch, "version", None), "cuda", None
+            ),
             "nvcc_version": _command(["nvcc", "--version"]),
             "ncu_version": _command(["ncu", "--version"]),
         },
         "run": json.loads(json.dumps(run)),
-        "environment_variables": {name: os.environ.get(name) for name in
-                                  ("CUDA_VISIBLE_DEVICES", "CUDA_DEVICE_ORDER")},
+        "environment_variables": {
+            name: os.environ.get(name)
+            for name in ("CUDA_VISIBLE_DEVICES", "CUDA_DEVICE_ORDER")
+        },
     }
