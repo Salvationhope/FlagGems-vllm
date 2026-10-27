@@ -263,12 +263,7 @@ def _get_baseline_op():
     if VENDOR == "iluvatar":
         return _iluvatar_vllm_op
 
-    # Method A: no vendor-native baseline for this vendor. Return None instead
-    # of falling back to the generic torch reference. With torch_op=None the
-    # benchmark skips latency_base/speedup and relies solely on the NV baseline
-    # (compared_speedup) when --base-data is provided; if the NV baseline also
-    # has no record for this op/shape/dtype, base.py raises and the case fails.
-    return None
+    return _torch_reference_op
 
 
 # -----------------------------------------------------------------------------
