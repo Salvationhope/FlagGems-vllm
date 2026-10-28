@@ -37229,21 +37229,20 @@
   "persistent_topk": {
     "native_api": "ops.persistent_topk",
     "shapes": {
-      "[1, 4102, 4102]": {
+      "[67, 1044, 65536, 65536]": {
         "torch.float32": {
           "config": {
             "inputs": {
               "logits": {
-                "shape": [1, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=4102 有效，其余 -inf"
+                "shape": [67, 65536],
+                "dtype": "torch.float32"
               },
               "lengths": {
-                "shape": [1],
+                "shape": [67],
                 "dtype": "torch.int32"
               },
               "output": {
-                "shape": [1, 512],
+                "shape": [67, 512],
                 "dtype": "torch.int32",
                 "note": "原地写回（top-k 索引）"
               },
@@ -37255,64 +37254,63 @@
                 "scalar": 512
               },
               "max_seq_len": {
-                "scalar": 4102
+                "scalar": 65536
               }
             },
             "outputs": {
               "output": {
-                "shape": [1, 512],
+                "shape": [67, 512],
                 "dtype": "torch.int32"
               }
             },
             "dims": {
               "kind": "homo",
-              "num_rows": 1,
-              "seq_len": 4102,
-              "max_seq_len": 4102,
-              "K": 512,
-              "STRIDE": 262144
+              "num_rows": 67,
+              "seq_len": 1044,
+              "max_seq_len": 65536,
+              "stride": 65536,
+              "K": 512
             }
           },
-          "T_us": 16.077379961437078,
-          "latency_ms": 0.01607737996143708,
+          "T_us": 7.860334648053158,
+          "latency_ms": 0.007860334648053158,
           "F_cuda": 0.0,
           "F_tensor": 0.0,
-          "B_mem": 123648.0,
-          "U_cuda": 0.031755,
+          "B_mem": 361472.0,
+          "U_cuda": 1.445113,
           "U_tensor": 0.0,
-          "U_mem": 0.193089,
-          "U_bottle_neck": 0.193089,
+          "U_mem": 1.6222429999999999,
+          "U_bottle_neck": 1.6222429999999999,
           "bottle_neck_unit": "mem",
           "num_kernels": 1,
           "per_kernel": [
             {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
+              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
               "F_cuda": 0.0,
               "F_tensor": 0.0,
-              "B_mem": 123648.0,
-              "U_cuda": 0.031755,
+              "B_mem": 361472.0,
+              "U_cuda": 1.445113,
               "U_tensor": 0.0,
-              "U_mem": 0.193089,
-              "T_us": 16.077379961437078
+              "U_mem": 1.622243,
+              "T_us": 7.860334648053158
             }
           ]
         }
       },
-      "[4, 4102, 4102]": {
+      "[128, 1044, 65536, 65536]": {
         "torch.float32": {
           "config": {
             "inputs": {
               "logits": {
-                "shape": [4, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=4102 有效，其余 -inf"
+                "shape": [128, 65536],
+                "dtype": "torch.float32"
               },
               "lengths": {
-                "shape": [4],
+                "shape": [128],
                 "dtype": "torch.int32"
               },
               "output": {
-                "shape": [4, 512],
+                "shape": [128, 512],
                 "dtype": "torch.int32",
                 "note": "原地写回（top-k 索引）"
               },
@@ -37324,33 +37322,509 @@
                 "scalar": 512
               },
               "max_seq_len": {
-                "scalar": 4102
+                "scalar": 65536
               }
             },
             "outputs": {
               "output": {
-                "shape": [4, 512],
+                "shape": [128, 512],
                 "dtype": "torch.int32"
               }
             },
             "dims": {
               "kind": "homo",
-              "num_rows": 4,
-              "seq_len": 4102,
-              "max_seq_len": 4102,
-              "K": 512,
-              "STRIDE": 262144
+              "num_rows": 128,
+              "seq_len": 1044,
+              "max_seq_len": 65536,
+              "stride": 65536,
+              "K": 512
             }
           },
-          "T_us": 17.304754739849823,
-          "latency_ms": 0.017304754739849822,
+          "T_us": 8.081397778254182,
+          "latency_ms": 0.008081397778254182,
           "F_cuda": 0.0,
           "F_tensor": 0.0,
-          "B_mem": 166912.0,
-          "U_cuda": 0.142367,
+          "B_mem": 619776.0,
+          "U_cuda": 2.646856,
           "U_tensor": 0.0,
-          "U_mem": 0.298579,
-          "U_bottle_neck": 0.298579,
+          "U_mem": 2.650885,
+          "U_bottle_neck": 2.650885,
+          "bottle_neck_unit": "mem",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 619776.0,
+              "U_cuda": 2.646856,
+              "U_tensor": 0.0,
+              "U_mem": 2.650885,
+              "T_us": 8.081397778254182
+            }
+          ]
+        }
+      },
+      "[256, 1044, 65536, 65536]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [256, 65536],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [256],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [256, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 65536
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [256, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 256,
+              "seq_len": 1044,
+              "max_seq_len": 65536,
+              "stride": 65536,
+              "K": 512
+            }
+          },
+          "T_us": 11.057131933529165,
+          "latency_ms": 0.011057131933529165,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 1160704.0,
+          "U_cuda": 3.9766119999999994,
+          "U_tensor": 0.0,
+          "U_mem": 3.725187,
+          "U_bottle_neck": 3.9766119999999994,
+          "bottle_neck_unit": "cuda",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 1160704.0,
+              "U_cuda": 3.976612,
+              "U_tensor": 0.0,
+              "U_mem": 3.725187,
+              "T_us": 11.057131933529165
+            }
+          ]
+        }
+      },
+      "[508, 1044, 65536, 65536]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [508, 65536],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [508],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [508, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 65536
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [508, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 508,
+              "seq_len": 1044,
+              "max_seq_len": 65536,
+              "stride": 65536,
+              "K": 512
+            }
+          },
+          "T_us": 16.70863150019455,
+          "latency_ms": 0.01670863150019455,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 2225408.0,
+          "U_cuda": 5.118826,
+          "U_tensor": 0.0,
+          "U_mem": 4.631425,
+          "U_bottle_neck": 5.118826,
+          "bottle_neck_unit": "cuda",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 2225408.0,
+              "U_cuda": 5.118826,
+              "U_tensor": 0.0,
+              "U_mem": 4.631425,
+              "T_us": 16.70863150019455
+            }
+          ]
+        }
+      },
+      "[67, 522, 32768, 32768]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [67, 32768],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [67],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [67, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 32768
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [67, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 67,
+              "seq_len": 522,
+              "max_seq_len": 32768,
+              "stride": 32768,
+              "K": 512
+            }
+          },
+          "T_us": 7.615212410936301,
+          "latency_ms": 0.0076152124109363,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 222720.0,
+          "U_cuda": 1.458864,
+          "U_tensor": 0.0,
+          "U_mem": 1.040272,
+          "U_bottle_neck": 1.458864,
+          "bottle_neck_unit": "cuda",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 222720.0,
+              "U_cuda": 1.458864,
+              "U_tensor": 0.0,
+              "U_mem": 1.040272,
+              "T_us": 7.615212410936301
+            }
+          ]
+        }
+      },
+      "[128, 522, 32768, 32768]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [128, 32768],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [128],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [128, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 32768
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [128, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 128,
+              "seq_len": 522,
+              "max_seq_len": 32768,
+              "stride": 32768,
+              "K": 512
+            }
+          },
+          "T_us": 7.974787866243454,
+          "latency_ms": 0.007974787866243454,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 352512.0,
+          "U_cuda": 2.662685,
+          "U_tensor": 0.0,
+          "U_mem": 1.5630679999999997,
+          "U_bottle_neck": 2.662685,
+          "bottle_neck_unit": "cuda",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 352512.0,
+              "U_cuda": 2.662685,
+              "U_tensor": 0.0,
+              "U_mem": 1.563068,
+              "T_us": 7.974787866243454
+            }
+          ]
+        }
+      },
+      "[256, 522, 32768, 32768]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [256, 32768],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [256],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [256, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 32768
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [256, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 256,
+              "seq_len": 522,
+              "max_seq_len": 32768,
+              "stride": 32768,
+              "K": 512
+            }
+          },
+          "T_us": 10.761785386386704,
+          "latency_ms": 0.010761785386386703,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 628992.0,
+          "U_cuda": 3.661155,
+          "U_tensor": 0.0,
+          "U_mem": 1.92579,
+          "U_bottle_neck": 3.661155,
+          "bottle_neck_unit": "cuda",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 628992.0,
+              "U_cuda": 3.661155,
+              "U_tensor": 0.0,
+              "U_mem": 1.92579,
+              "T_us": 10.761785386386704
+            }
+          ]
+        }
+      },
+      "[508, 522, 32768, 32768]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [508, 32768],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [508],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [508, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 32768
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [508, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 508,
+              "seq_len": 522,
+              "max_seq_len": 32768,
+              "stride": 32768,
+              "K": 512
+            }
+          },
+          "T_us": 16.09091350988633,
+          "latency_ms": 0.01609091350988633,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 1169152.0,
+          "U_cuda": 4.818124,
+          "U_tensor": 0.0,
+          "U_mem": 2.370743,
+          "U_bottle_neck": 4.818124,
+          "bottle_neck_unit": "cuda",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 1169152.0,
+              "U_cuda": 4.818124,
+              "U_tensor": 0.0,
+              "U_mem": 2.370743,
+              "T_us": 16.09091350988633
+            }
+          ]
+        }
+      },
+      "[16, 4096, 65536, 65536]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [16, 65536],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [16],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [16, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 65536
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [16, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 16,
+              "seq_len": 4096,
+              "max_seq_len": 65536,
+              "stride": 65536,
+              "K": 512
+            }
+          },
+          "T_us": 15.437718905343948,
+          "latency_ms": 0.015437718905343947,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 361984.0,
+          "U_cuda": 0.464915,
+          "U_tensor": 0.0,
+          "U_mem": 0.733585,
+          "U_bottle_neck": 0.733585,
           "bottle_neck_unit": "mem",
           "num_kernels": 1,
           "per_kernel": [
@@ -37358,23 +37832,498 @@
               "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
               "F_cuda": 0.0,
               "F_tensor": 0.0,
-              "B_mem": 166912.0,
-              "U_cuda": 0.142367,
+              "B_mem": 361984.0,
+              "U_cuda": 0.464915,
               "U_tensor": 0.0,
-              "U_mem": 0.298579,
-              "T_us": 17.304754739849823
+              "U_mem": 0.733585,
+              "T_us": 15.437718905343948
             }
           ]
         }
       },
-      "[10, 1055, 1055]": {
+      "[125, 4096, 65536, 65536]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [125, 65536],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [125],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [125, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 65536
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [125, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 125,
+              "seq_len": 4096,
+              "max_seq_len": 65536,
+              "stride": 65536,
+              "K": 512
+            }
+          },
+          "T_us": 9.280269662936806,
+          "latency_ms": 0.009280269662936807,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 2127104.0,
+          "U_cuda": 3.1377750000000004,
+          "U_tensor": 0.0,
+          "U_mem": 8.763289,
+          "U_bottle_neck": 8.763289,
+          "bottle_neck_unit": "mem",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 2127104.0,
+              "U_cuda": 3.137775,
+              "U_tensor": 0.0,
+              "U_mem": 8.763289,
+              "T_us": 9.280269662936806
+            }
+          ]
+        }
+      },
+      "[48, 2048, 32768, 32768]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [48, 32768],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [48],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [48, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 32768
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [48, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 48,
+              "seq_len": 2048,
+              "max_seq_len": 32768,
+              "stride": 32768,
+              "K": 512
+            }
+          },
+          "T_us": 8.148253929613649,
+          "latency_ms": 0.00814825392961365,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 471808.0,
+          "U_cuda": 1.146764,
+          "U_tensor": 0.0,
+          "U_mem": 2.135475,
+          "U_bottle_neck": 2.135475,
+          "bottle_neck_unit": "mem",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 471808.0,
+              "U_cuda": 1.146764,
+              "U_tensor": 0.0,
+              "U_mem": 2.135475,
+              "T_us": 8.148253929613649
+            }
+          ]
+        }
+      },
+      "[120, 2048, 32768, 32768]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [120, 32768],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [120],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [120, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 32768
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [120, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 120,
+              "seq_len": 2048,
+              "max_seq_len": 32768,
+              "stride": 32768,
+              "K": 512
+            }
+          },
+          "T_us": 8.297907569843332,
+          "latency_ms": 0.008297907569843332,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 1062144.0,
+          "U_cuda": 2.779493,
+          "U_tensor": 0.0,
+          "U_mem": 4.662217,
+          "U_bottle_neck": 4.662217,
+          "bottle_neck_unit": "mem",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 1062144.0,
+              "U_cuda": 2.779493,
+              "U_tensor": 0.0,
+              "U_mem": 4.662217,
+              "T_us": 8.297907569843332
+            }
+          ]
+        }
+      },
+      "[3, 32769, 65536, 65536]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [3, 65536],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [3],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [3, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 65536
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [3, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 3,
+              "seq_len": 32769,
+              "max_seq_len": 65536,
+              "stride": 65536,
+              "K": 512
+            }
+          },
+          "T_us": 27.27758655501478,
+          "latency_ms": 0.027277586555014777,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 462336.0,
+          "U_cuda": 0.731418,
+          "U_tensor": 0.0,
+          "U_mem": 0.605488,
+          "U_bottle_neck": 0.731418,
+          "bottle_neck_unit": "cuda",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 462336.0,
+              "U_cuda": 0.731418,
+              "U_tensor": 0.0,
+              "U_mem": 0.605488,
+              "T_us": 27.27758655501478
+            }
+          ]
+        }
+      },
+      "[5, 16384, 32768, 32768]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [5, 32768],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [5],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [5, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 32768
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [5, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 5,
+              "seq_len": 16384,
+              "max_seq_len": 32768,
+              "stride": 32768,
+              "K": 512
+            }
+          },
+          "T_us": 18.44683009267897,
+          "latency_ms": 0.01844683009267897,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 394496.0,
+          "U_cuda": 0.156454,
+          "U_tensor": 0.0,
+          "U_mem": 0.8467780000000001,
+          "U_bottle_neck": 0.8467780000000001,
+          "bottle_neck_unit": "mem",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 394496.0,
+              "U_cuda": 0.156454,
+              "U_tensor": 0.0,
+              "U_mem": 0.846778,
+              "T_us": 18.44683009267897
+            }
+          ]
+        }
+      },
+      "[12, 4105, 4105, 262144]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [12, 262144],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [12],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [12, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 4105
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [12, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 12,
+              "seq_len": 4105,
+              "max_seq_len": 4105,
+              "stride": 262144,
+              "K": 512
+            }
+          },
+          "T_us": 18.088631792328297,
+          "latency_ms": 0.018088631792328298,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 300288.0,
+          "U_cuda": 0.312063,
+          "U_tensor": 0.0,
+          "U_mem": 0.528112,
+          "U_bottle_neck": 0.528112,
+          "bottle_neck_unit": "mem",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 300288.0,
+              "U_cuda": 0.312063,
+              "U_tensor": 0.0,
+              "U_mem": 0.528112,
+              "T_us": 18.088631792328297
+            }
+          ]
+        }
+      },
+      "[24, 4108, 4108, 262144]": {
+        "torch.float32": {
+          "config": {
+            "inputs": {
+              "logits": {
+                "shape": [24, 262144],
+                "dtype": "torch.float32"
+              },
+              "lengths": {
+                "shape": [24],
+                "dtype": "torch.int32"
+              },
+              "output": {
+                "shape": [24, 512],
+                "dtype": "torch.int32",
+                "note": "原地写回（top-k 索引）"
+              },
+              "workspace": {
+                "shape": [1048576],
+                "dtype": "torch.uint8"
+              },
+              "k": {
+                "scalar": 512
+              },
+              "max_seq_len": {
+                "scalar": 4108
+              }
+            },
+            "outputs": {
+              "output": {
+                "shape": [24, 512],
+                "dtype": "torch.int32"
+              }
+            },
+            "dims": {
+              "kind": "homo",
+              "num_rows": 24,
+              "seq_len": 4108,
+              "max_seq_len": 4108,
+              "stride": 262144,
+              "K": 512
+            }
+          },
+          "T_us": 18.789652887008284,
+          "latency_ms": 0.018789652887008283,
+          "F_cuda": 0.0,
+          "F_tensor": 0.0,
+          "B_mem": 505088.0,
+          "U_cuda": 0.596688,
+          "U_tensor": 0.0,
+          "U_mem": 0.858722,
+          "U_bottle_neck": 0.858722,
+          "bottle_neck_unit": "mem",
+          "num_kernels": 1,
+          "per_kernel": [
+            {
+              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
+              "F_cuda": 0.0,
+              "F_tensor": 0.0,
+              "B_mem": 505088.0,
+              "U_cuda": 0.596688,
+              "U_tensor": 0.0,
+              "U_mem": 0.858722,
+              "T_us": 18.789652887008284
+            }
+          ]
+        }
+      },
+      "[10, 1055, 1055, 262144]": {
         "torch.float32": {
           "config": {
             "inputs": {
               "logits": {
                 "shape": [10, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=1055 有效，其余 -inf"
+                "dtype": "torch.float32"
               },
               "lengths": {
                 "shape": [10],
@@ -37407,19 +38356,19 @@
               "num_rows": 10,
               "seq_len": 1055,
               "max_seq_len": 1055,
-              "K": 512,
-              "STRIDE": 262144
+              "stride": 262144,
+              "K": 512
             }
           },
-          "T_us": 14.426457177011027,
-          "latency_ms": 0.014426457177011028,
+          "T_us": 13.880743231107067,
+          "latency_ms": 0.013880743231107067,
           "F_cuda": 0.0,
           "F_tensor": 0.0,
-          "B_mem": 124416.0,
-          "U_cuda": 0.249173,
+          "B_mem": 142080.0,
+          "U_cuda": 0.179736,
           "U_tensor": 0.0,
-          "U_mem": 0.369886,
-          "U_bottle_neck": 0.369886,
+          "U_mem": 0.287624,
+          "U_bottle_neck": 0.287624,
           "bottle_neck_unit": "mem",
           "num_kernels": 1,
           "per_kernel": [
@@ -37427,299 +38376,22 @@
               "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
               "F_cuda": 0.0,
               "F_tensor": 0.0,
-              "B_mem": 124416.0,
-              "U_cuda": 0.249173,
+              "B_mem": 142080.0,
+              "U_cuda": 0.179736,
               "U_tensor": 0.0,
-              "U_mem": 0.369886,
-              "T_us": 14.426457177011027
+              "U_mem": 0.287624,
+              "T_us": 13.880743231107067
             }
           ]
         }
       },
-      "[12, 4105, 4105]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [12, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=4105 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [12],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [12, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 4105
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [12, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 12,
-              "seq_len": 4105,
-              "max_seq_len": 4105,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 18.472306039319168,
-          "latency_ms": 0.018472306039319167,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 301568.0,
-          "U_cuda": 0.310165,
-          "U_tensor": 0.0,
-          "U_mem": 0.54136,
-          "U_bottle_neck": 0.54136,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 301568.0,
-              "U_cuda": 0.310165,
-              "U_tensor": 0.0,
-              "U_mem": 0.54136,
-              "T_us": 18.472306039319168
-            }
-          ]
-        }
-      },
-      "[20, 4105, 4105]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [20, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=4105 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [20],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [20, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 4105
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [20, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 20,
-              "seq_len": 4105,
-              "max_seq_len": 4105,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 18.762920348449477,
-          "latency_ms": 0.018762920348449477,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 435456.0,
-          "U_cuda": 0.525964,
-          "U_tensor": 0.0,
-          "U_mem": 0.786451,
-          "U_bottle_neck": 0.786451,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 435456.0,
-              "U_cuda": 0.525964,
-              "U_tensor": 0.0,
-              "U_mem": 0.786451,
-              "T_us": 18.762920348449477
-            }
-          ]
-        }
-      },
-      "[28, 4109, 4109]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [28, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=4109 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [28],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [28, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 4109
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [28, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 28,
-              "seq_len": 4109,
-              "max_seq_len": 4109,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 27.01548479160683,
-          "latency_ms": 0.02701548479160683,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 568064.0,
-          "U_cuda": 0.484264,
-          "U_tensor": 0.0,
-          "U_mem": 0.670895,
-          "U_bottle_neck": 0.670895,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 568064.0,
-              "U_cuda": 0.484264,
-              "U_tensor": 0.0,
-              "U_mem": 0.670895,
-              "T_us": 27.01548479160683
-            }
-          ]
-        }
-      },
-      "[1, 8192, 8192]": {
+      "[1, 32773, 32773, 262144]": {
         "torch.float32": {
           "config": {
             "inputs": {
               "logits": {
                 "shape": [1, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=8192 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [1],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [1, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 8192
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [1, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 1,
-              "seq_len": 8192,
-              "max_seq_len": 8192,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 16.513941261476646,
-          "latency_ms": 0.016513941261476647,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 133376.0,
-          "U_cuda": 0.038936,
-          "U_tensor": 0.0,
-          "U_mem": 0.217257,
-          "U_bottle_neck": 0.217257,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 133376.0,
-              "U_cuda": 0.038936,
-              "U_tensor": 0.0,
-              "U_mem": 0.217257,
-              "T_us": 16.513941261476646
-            }
-          ]
-        }
-      },
-      "[1, 32773, 32773]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [1, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=32773 有效，其余 -inf"
+                "dtype": "torch.float32"
               },
               "lengths": {
                 "shape": [1],
@@ -37752,19 +38424,19 @@
               "num_rows": 1,
               "seq_len": 32773,
               "max_seq_len": 32773,
-              "K": 512,
-              "STRIDE": 262144
+              "stride": 262144,
+              "K": 512
             }
           },
-          "T_us": 27.200943313099767,
-          "latency_ms": 0.027200943313099767,
+          "T_us": 27.53975830755511,
+          "latency_ms": 0.02753975830755511,
           "F_cuda": 0.0,
           "F_tensor": 0.0,
-          "B_mem": 202752.0,
-          "U_cuda": 0.676453,
+          "B_mem": 197888.0,
+          "U_cuda": 0.677863,
           "U_tensor": 0.0,
-          "U_mem": 0.261462,
-          "U_bottle_neck": 0.676453,
+          "U_mem": 0.253516,
+          "U_bottle_neck": 0.677863,
           "bottle_neck_unit": "cuda",
           "num_kernels": 1,
           "per_kernel": [
@@ -37772,2495 +38444,11 @@
               "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
               "F_cuda": 0.0,
               "F_tensor": 0.0,
-              "B_mem": 202752.0,
-              "U_cuda": 0.676453,
+              "B_mem": 197888.0,
+              "U_cuda": 0.677863,
               "U_tensor": 0.0,
-              "U_mem": 0.261462,
-              "T_us": 27.200943313099767
-            }
-          ]
-        }
-      },
-      "[1, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [1, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [1],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [1, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [1, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 1,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 28.078218086028663,
-          "latency_ms": 0.028078218086028662,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 1115648.0,
-          "U_cuda": 1.208317,
-          "U_tensor": 0.0,
-          "U_mem": 1.40053,
-          "U_bottle_neck": 1.40053,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 1115648.0,
-              "U_cuda": 1.208317,
-              "U_tensor": 0.0,
-              "U_mem": 1.40053,
-              "T_us": 28.078218086028663
-            }
-          ]
-        }
-      },
-      "[2, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [2, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [2],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [2, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [2, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 2,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 29.373602702723186,
-          "latency_ms": 0.029373602702723187,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 2164992.0,
-          "U_cuda": 2.360747,
-          "U_tensor": 0.0,
-          "U_mem": 2.654226,
-          "U_bottle_neck": 2.654226,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 2164992.0,
-              "U_cuda": 2.360747,
-              "U_tensor": 0.0,
-              "U_mem": 2.654226,
-              "T_us": 29.373602702723186
-            }
-          ]
-        }
-      },
-      "[3, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [3, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [3],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [3, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [3, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 3,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 30.197809875984372,
-          "latency_ms": 0.03019780987598437,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 3214848.0,
-          "U_cuda": 3.509942,
-          "U_tensor": 0.0,
-          "U_mem": 3.9079620000000004,
-          "U_bottle_neck": 3.9079620000000004,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 3214848.0,
-              "U_cuda": 3.509942,
-              "U_tensor": 0.0,
-              "U_mem": 3.907962,
-              "T_us": 30.197809875984372
-            }
-          ]
-        }
-      },
-      "[4, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [4, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [4],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [4, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [4, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 4,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 30.81182933991481,
-          "latency_ms": 0.030811829339914807,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 4264448.0,
-          "U_cuda": 4.677105,
-          "U_tensor": 0.0,
-          "U_mem": 5.179984,
-          "U_bottle_neck": 5.179984,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 4264448.0,
-              "U_cuda": 4.677105,
-              "U_tensor": 0.0,
-              "U_mem": 5.179984,
-              "T_us": 30.81182933991481
-            }
-          ]
-        }
-      },
-      "[5, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [5, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [5],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [5, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [5, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 5,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 32.74384050128887,
-          "latency_ms": 0.032743840501288875,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 5313792.0,
-          "U_cuda": 4.661807,
-          "U_tensor": 0.0,
-          "U_mem": 6.046104,
-          "U_bottle_neck": 6.046104,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 5313792.0,
-              "U_cuda": 4.661807,
-              "U_tensor": 0.0,
-              "U_mem": 6.046104,
-              "T_us": 32.74384050128887
-            }
-          ]
-        }
-      },
-      "[6, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [6, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [6],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [6, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [6, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 6,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 54.193152362413684,
-          "latency_ms": 0.054193152362413684,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 6363136.0,
-          "U_cuda": 3.060404,
-          "U_tensor": 0.0,
-          "U_mem": 3.955946,
-          "U_bottle_neck": 3.955946,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 6363136.0,
-              "U_cuda": 3.060404,
-              "U_tensor": 0.0,
-              "U_mem": 3.955946,
-              "T_us": 54.193152362413684
-            }
-          ]
-        }
-      },
-      "[7, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [7, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [7],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [7, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [7, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 7,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 54.832622108774046,
-          "latency_ms": 0.05483262210877405,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 7410944.0,
-          "U_cuda": 3.5355339999999997,
-          "U_tensor": 0.0,
-          "U_mem": 4.57822,
-          "U_bottle_neck": 4.57822,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 7410944.0,
-              "U_cuda": 3.535534,
-              "U_tensor": 0.0,
-              "U_mem": 4.57822,
-              "T_us": 54.832622108774046
-            }
-          ]
-        }
-      },
-      "[8, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [8, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [8],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [8, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [8, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 8,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 54.88771029999661,
-          "latency_ms": 0.05488771029999661,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 8459776.0,
-          "U_cuda": 4.029525,
-          "U_tensor": 0.0,
-          "U_mem": 5.223508,
-          "U_bottle_neck": 5.223508,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 8459776.0,
-              "U_cuda": 4.029525,
-              "U_tensor": 0.0,
-              "U_mem": 5.223508,
-              "T_us": 54.88771029999661
-            }
-          ]
-        }
-      },
-      "[9, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [9, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [9],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [9, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [9, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 9,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 57.66749500382876,
-          "latency_ms": 0.05766749500382876,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 9512448.0,
-          "U_cuda": 2.633404,
-          "U_tensor": 0.0,
-          "U_mem": 5.562575,
-          "U_bottle_neck": 5.562575,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 9512448.0,
-              "U_cuda": 2.633404,
-              "U_tensor": 0.0,
-              "U_mem": 5.562575,
-              "T_us": 57.66749500382876
-            }
-          ]
-        }
-      },
-      "[10, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [10, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [10],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [10, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [10, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 10,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 57.932972855028694,
-          "latency_ms": 0.05793297285502869,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 10562560.0,
-          "U_cuda": 2.924253,
-          "U_tensor": 0.0,
-          "U_mem": 6.169849,
-          "U_bottle_neck": 6.169849,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 10562560.0,
-              "U_cuda": 2.924253,
-              "U_tensor": 0.0,
-              "U_mem": 6.169849,
-              "T_us": 57.932972855028694
-            }
-          ]
-        }
-      },
-      "[11, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [11, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [11],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [11, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [11, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 11,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 58.49957075476305,
-          "latency_ms": 0.05849957075476305,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 11612672.0,
-          "U_cuda": 3.164874,
-          "U_tensor": 0.0,
-          "U_mem": 6.674652,
-          "U_bottle_neck": 6.674652,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 11612672.0,
-              "U_cuda": 3.164874,
-              "U_tensor": 0.0,
-              "U_mem": 6.674652,
-              "T_us": 58.49957075476305
-            }
-          ]
-        }
-      },
-      "[12, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [12, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [12],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [12, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [12, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 12,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 58.84950629803492,
-          "latency_ms": 0.05884950629803492,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 12662016.0,
-          "U_cuda": 3.457643,
-          "U_tensor": 0.0,
-          "U_mem": 7.290487,
-          "U_bottle_neck": 7.290487,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 12662016.0,
-              "U_cuda": 3.457643,
-              "U_tensor": 0.0,
-              "U_mem": 7.290487,
-              "T_us": 58.84950629803492
-            }
-          ]
-        }
-      },
-      "[13, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [13, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [13],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [13, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [13, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 13,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 59.278094716145624,
-          "latency_ms": 0.059278094716145625,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 13711360.0,
-          "U_cuda": 3.7132829999999997,
-          "U_tensor": 0.0,
-          "U_mem": 7.819616999999999,
-          "U_bottle_neck": 7.819616999999999,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 13711360.0,
-              "U_cuda": 3.713283,
-              "U_tensor": 0.0,
-              "U_mem": 7.819617,
-              "T_us": 59.278094716145624
-            }
-          ]
-        }
-      },
-      "[14, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [14, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [14],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [14, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [14, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 14,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 59.71752511833211,
-          "latency_ms": 0.059717525118332115,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 14763264.0,
-          "U_cuda": 4.009628,
-          "U_tensor": 0.0,
-          "U_mem": 8.444573,
-          "U_bottle_neck": 8.444573,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 14763264.0,
-              "U_cuda": 4.009628,
-              "U_tensor": 0.0,
-              "U_mem": 8.444573,
-              "T_us": 59.71752511833211
-            }
-          ]
-        }
-      },
-      "[15, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [15, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [15],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [15, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [15, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 15,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 60.16253600546538,
-          "latency_ms": 0.060162536005465374,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 15812096.0,
-          "U_cuda": 4.239289,
-          "U_tensor": 0.0,
-          "U_mem": 8.919742,
-          "U_bottle_neck": 8.919742,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 15812096.0,
-              "U_cuda": 4.239289,
-              "U_tensor": 0.0,
-              "U_mem": 8.919742,
-              "T_us": 60.16253600546538
-            }
-          ]
-        }
-      },
-      "[16, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [16, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [16],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [16, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [16, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 16,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 60.614843987402196,
-          "latency_ms": 0.060614843987402196,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 16861184.0,
-          "U_cuda": 4.539725,
-          "U_tensor": 0.0,
-          "U_mem": 9.549715,
-          "U_bottle_neck": 9.549715,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 16861184.0,
-              "U_cuda": 4.539725,
-              "U_tensor": 0.0,
-              "U_mem": 9.549715,
-              "T_us": 60.614843987402196
-            }
-          ]
-        }
-      },
-      "[17, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [17, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [17],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [17, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [17, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 17,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 61.121204067372034,
-          "latency_ms": 0.06112120406737204,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 17918720.0,
-          "U_cuda": 4.76003,
-          "U_tensor": 0.0,
-          "U_mem": 10.01531,
-          "U_bottle_neck": 10.01531,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 17918720.0,
-              "U_cuda": 4.76003,
-              "U_tensor": 0.0,
-              "U_mem": 10.01531,
-              "T_us": 61.121204067372034
-            }
-          ]
-        }
-      },
-      "[18, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [18, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [18],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [18, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [18, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 18,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 61.54150297230034,
-          "latency_ms": 0.06154150297230034,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 18967040.0,
-          "U_cuda": 5.020949,
-          "U_tensor": 0.0,
-          "U_mem": 10.571238,
-          "U_bottle_neck": 10.571238,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 18967040.0,
-              "U_cuda": 5.020949,
-              "U_tensor": 0.0,
-              "U_mem": 10.571238,
-              "T_us": 61.54150297230034
-            }
-          ]
-        }
-      },
-      "[19, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [19, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [19],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [19, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [19, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 19,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 62.0008153133257,
-          "latency_ms": 0.0620008153133257,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 20026112.0,
-          "U_cuda": 5.305128,
-          "U_tensor": 0.0,
-          "U_mem": 11.167628,
-          "U_bottle_neck": 11.167628,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 20026112.0,
-              "U_cuda": 5.305128,
-              "U_tensor": 0.0,
-              "U_mem": 11.167628,
-              "T_us": 62.0008153133257
-            }
-          ]
-        }
-      },
-      "[20, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [20, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [20],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [20, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [20, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 20,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 62.34146592608333,
-          "latency_ms": 0.062341465926083334,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 21084160.0,
-          "U_cuda": 5.572624,
-          "U_tensor": 0.0,
-          "U_mem": 11.728719,
-          "U_bottle_neck": 11.728719,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 21084160.0,
-              "U_cuda": 5.572624,
-              "U_tensor": 0.0,
-              "U_mem": 11.728719,
-              "T_us": 62.34146592608333
-            }
-          ]
-        }
-      },
-      "[21, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [21, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [21],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [21, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [21, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 21,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 62.87476079462216,
-          "latency_ms": 0.06287476079462216,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 22145536.0,
-          "U_cuda": 5.793641,
-          "U_tensor": 0.0,
-          "U_mem": 12.205122,
-          "U_bottle_neck": 12.205122,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 22145536.0,
-              "U_cuda": 5.793641,
-              "U_tensor": 0.0,
-              "U_mem": 12.205122,
-              "T_us": 62.87476079462216
-            }
-          ]
-        }
-      },
-      "[22, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [22, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [22],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [22, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [22, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 22,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 63.31661477750426,
-          "latency_ms": 0.06331661477750426,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 23241472.0,
-          "U_cuda": 6.027133,
-          "U_tensor": 0.0,
-          "U_mem": 12.710994000000001,
-          "U_bottle_neck": 12.710994000000001,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 23241472.0,
-              "U_cuda": 6.027133,
-              "U_tensor": 0.0,
-              "U_mem": 12.710994,
-              "T_us": 63.31661477750426
-            }
-          ]
-        }
-      },
-      "[23, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [23, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [23],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [23, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [23, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 23,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 63.80743306663928,
-          "latency_ms": 0.06380743306663927,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 24375040.0,
-          "U_cuda": 6.219618,
-          "U_tensor": 0.0,
-          "U_mem": 13.155313,
-          "U_bottle_neck": 13.155313,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 24375040.0,
-              "U_cuda": 6.219618,
-              "U_tensor": 0.0,
-              "U_mem": 13.155313,
-              "T_us": 63.80743306663928
-            }
-          ]
-        }
-      },
-      "[24, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [24, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [24],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [24, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [24, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 24,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 64.11380891889203,
-          "latency_ms": 0.06411380891889203,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 25515520.0,
-          "U_cuda": 6.469886,
-          "U_tensor": 0.0,
-          "U_mem": 13.722299,
-          "U_bottle_neck": 13.722299,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 25515520.0,
-              "U_cuda": 6.469886,
-              "U_tensor": 0.0,
-              "U_mem": 13.722299,
-              "T_us": 64.11380891889203
-            }
-          ]
-        }
-      },
-      "[25, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [25, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [25],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [25, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [25, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 25,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 64.59479264297782,
-          "latency_ms": 0.06459479264297782,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 26807296.0,
-          "U_cuda": 6.708178000000001,
-          "U_tensor": 0.0,
-          "U_mem": 14.362286,
-          "U_bottle_neck": 14.362286,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 26807296.0,
-              "U_cuda": 6.708178,
-              "U_tensor": 0.0,
-              "U_mem": 14.362286,
-              "T_us": 64.59479264297782
-            }
-          ]
-        }
-      },
-      "[26, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [26, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [26],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [26, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [26, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 26,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 65.27990440320329,
-          "latency_ms": 0.06527990440320329,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 28004608.0,
-          "U_cuda": 6.916129,
-          "U_tensor": 0.0,
-          "U_mem": 14.864471999999997,
-          "U_bottle_neck": 14.864471999999997,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 28004608.0,
-              "U_cuda": 6.916129,
-              "U_tensor": 0.0,
-              "U_mem": 14.864472,
-              "T_us": 65.27990440320329
-            }
-          ]
-        }
-      },
-      "[27, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [27, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [27],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [27, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [27, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 27,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 110.38381373870743,
-          "latency_ms": 0.11038381373870743,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 29185280.0,
-          "U_cuda": 4.018184,
-          "U_tensor": 0.0,
-          "U_mem": 8.654261,
-          "U_bottle_neck": 8.654261,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 29185280.0,
-              "U_cuda": 4.018184,
-              "U_tensor": 0.0,
-              "U_mem": 8.654261,
-              "T_us": 110.38381373870743
-            }
-          ]
-        }
-      },
-      "[28, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [28, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [28],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [28, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [28, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 28,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 112.13772552562695,
-          "latency_ms": 0.11213772552562695,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 30495744.0,
-          "U_cuda": 4.068337,
-          "U_tensor": 0.0,
-          "U_mem": 8.836882,
-          "U_bottle_neck": 8.836882,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 30495744.0,
-              "U_cuda": 4.068337,
-              "U_tensor": 0.0,
-              "U_mem": 8.836882,
-              "T_us": 112.13772552562695
-            }
-          ]
-        }
-      },
-      "[29, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [29, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [29],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [29, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [29, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 29,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 112.77596871642506,
-          "latency_ms": 0.11277596871642505,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 31671552.0,
-          "U_cuda": 4.220198,
-          "U_tensor": 0.0,
-          "U_mem": 9.193533,
-          "U_bottle_neck": 9.193533,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 31671552.0,
-              "U_cuda": 4.220198,
-              "U_tensor": 0.0,
-              "U_mem": 9.193533,
-              "T_us": 112.77596871642506
-            }
-          ]
-        }
-      },
-      "[30, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [30, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [30],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [30, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [30, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 30,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 113.24844078168155,
-          "latency_ms": 0.11324844078168156,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 32855808.000000004,
-          "U_cuda": 4.331146,
-          "U_tensor": 0.0,
-          "U_mem": 9.4569,
-          "U_bottle_neck": 9.4569,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 32855808.000000004,
-              "U_cuda": 4.331146,
-              "U_tensor": 0.0,
-              "U_mem": 9.4569,
-              "T_us": 113.24844078168155
-            }
-          ]
-        }
-      },
-      "[31, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [31, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [31],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [31, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [31, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 31,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 113.40642786330466,
-          "latency_ms": 0.11340642786330465,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 34300160.0,
-          "U_cuda": 4.477899,
-          "U_tensor": 0.0,
-          "U_mem": 9.888834,
-          "U_bottle_neck": 9.888834,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 34300160.0,
-              "U_cuda": 4.477899,
-              "U_tensor": 0.0,
-              "U_mem": 9.888834,
-              "T_us": 113.40642786330466
-            }
-          ]
-        }
-      },
-      "[32, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [32, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [32],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [32, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [32, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 32,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 113.73259850198359,
-          "latency_ms": 0.11373259850198358,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 35408640.0,
-          "U_cuda": 4.616879,
-          "U_tensor": 0.0,
-          "U_mem": 10.202509,
-          "U_bottle_neck": 10.202509,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void persistent_topk_kernel<512, 4>(PersistentTopKParams)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 35408640.0,
-              "U_cuda": 4.616879,
-              "U_tensor": 0.0,
-              "U_mem": 10.202509,
-              "T_us": 113.73259850198359
-            }
-          ]
-        }
-      },
-      "[496, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [496, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [496],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [496, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [496, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 496,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 443.9454811906058,
-          "latency_ms": 0.4439454811906058,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 1088183000.0,
-          "U_cuda": 1.462817,
-          "U_tensor": 0.0,
-          "U_mem": 74.953924,
-          "U_bottle_neck": 74.953924,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 1088183000.0,
-              "U_cuda": 1.462817,
-              "U_tensor": 0.0,
-              "U_mem": 74.953924,
-              "T_us": 443.9454811906058
-            }
-          ]
-        }
-      },
-      "[512, 262144, 1048576]": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [512, 262144],
-                "dtype": "torch.float32",
-                "note": "前 seq_len=262144 有效，其余 -inf"
-              },
-              "lengths": {
-                "shape": [512],
-                "dtype": "torch.int32"
-              },
-              "output": {
-                "shape": [512, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [512, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "homo",
-              "num_rows": 512,
-              "seq_len": 262144,
-              "max_seq_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 448.89429845708486,
-          "latency_ms": 0.44889429845708484,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 1123620000.0,
-          "U_cuda": 1.487877,
-          "U_tensor": 0.0,
-          "U_mem": 76.321631,
-          "U_bottle_neck": 76.321631,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 1123620000.0,
-              "U_cuda": 1.487877,
-              "U_tensor": 0.0,
-              "U_mem": 76.321631,
-              "T_us": 448.89429845708486
-            }
-          ]
-        }
-      },
-      "hetero_nr496_maxlen1048576": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [496, 262144],
-                "dtype": "torch.float32",
-                "note": "各行 seq_len=linspace(1,min(max_len,STRIDE),nr)，其余 -inf"
-              },
-              "lengths": {
-                "shape": [496],
-                "dtype": "torch.int32",
-                "note": "异构：逐行不等"
-              },
-              "output": {
-                "shape": [496, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1048576
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [496, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "hetero",
-              "num_rows": 496,
-              "max_len": 1048576,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 262.1673939556911,
-          "latency_ms": 0.2621673939556911,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 510203392.0,
-          "U_cuda": 1.470741,
-          "U_tensor": 0.0,
-          "U_mem": 60.619708,
-          "U_bottle_neck": 60.619708,
-          "bottle_neck_unit": "mem",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 510203392.0,
-              "U_cuda": 1.470741,
-              "U_tensor": 0.0,
-              "U_mem": 60.619708,
-              "T_us": 262.1673939556911
-            }
-          ]
-        }
-      },
-      "hetero_nr496_maxlen1": {
-        "torch.float32": {
-          "config": {
-            "inputs": {
-              "logits": {
-                "shape": [496, 262144],
-                "dtype": "torch.float32",
-                "note": "各行 seq_len=linspace(1,min(max_len,STRIDE),nr)，其余 -inf"
-              },
-              "lengths": {
-                "shape": [496],
-                "dtype": "torch.int32",
-                "note": "异构：逐行不等"
-              },
-              "output": {
-                "shape": [496, 512],
-                "dtype": "torch.int32",
-                "note": "原地写回（top-k 索引）"
-              },
-              "workspace": {
-                "shape": [1048576],
-                "dtype": "torch.uint8"
-              },
-              "k": {
-                "scalar": 512
-              },
-              "max_seq_len": {
-                "scalar": 1
-              }
-            },
-            "outputs": {
-              "output": {
-                "shape": [496, 512],
-                "dtype": "torch.int32"
-              }
-            },
-            "dims": {
-              "kind": "hetero",
-              "num_rows": 496,
-              "max_len": 1,
-              "K": 512,
-              "STRIDE": 262144
-            }
-          },
-          "T_us": 8.143386322224357,
-          "latency_ms": 0.008143386322224357,
-          "F_cuda": 0.0,
-          "F_tensor": 0.0,
-          "B_mem": 67840.0,
-          "U_cuda": 1.9822390000000003,
-          "U_tensor": 0.0,
-          "U_mem": 0.379874,
-          "U_bottle_neck": 1.9822390000000003,
-          "bottle_neck_unit": "cuda",
-          "num_kernels": 1,
-          "per_kernel": [
-            {
-              "name": "void FilteredTopKUnifiedKernel<float, int, 4, 512, 0>(const T1 *, T2 *, const T2 *, unsigned int, unsigned int, unsigned int)",
-              "F_cuda": 0.0,
-              "F_tensor": 0.0,
-              "B_mem": 67840.0,
-              "U_cuda": 1.982239,
-              "U_tensor": 0.0,
-              "U_mem": 0.379874,
-              "T_us": 8.143386322224357
+              "U_mem": 0.253516,
+              "T_us": 27.53975830755511
             }
           ]
         }
